@@ -3,7 +3,9 @@
 # ~~~~
 
 # Home page
-GET        /                             controllers.Application.index
+GET        /                             controllers.LoginController.index
+POST       /validateUser                 controllers.LoginController.validateUser
+POST       /createUser                   controllers.LoginController.createUser
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)
