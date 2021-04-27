@@ -1,6 +1,5 @@
-# play-scalajs-slinky
+# Bullet Journal
 
-This is my starter project for things that involve Play using Scala.js and
-the Slinky React binding. I'm using this as the starter for student code in
-Web Apps Spring 2021.
+Bullet Journal web application for Dr. Lewis' Web Apps Spring 2021 with Play, React, and Postgres.
 
+Written by Matthew Barton, Morgan Cartwright, Morgen Halle, and Vasti Sarai Rios Rios.
