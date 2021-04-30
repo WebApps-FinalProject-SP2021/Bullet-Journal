@@ -5,6 +5,9 @@
   <div id="root"></div>
   
   <!-- Used for testing LoginController -->
+  <button onclick="create()">Create</button>
+  <button onclick="login()">Login</button>
+
   <script src="@routes.Assets.versioned("javascript/testScript.js")"></script>
   <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
   <!-- ~~~ -->

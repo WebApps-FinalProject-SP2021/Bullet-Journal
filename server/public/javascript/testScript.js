@@ -2,14 +2,12 @@
 
 console.log("JavaScript is working.");
 
-window.onload = () => {
+function create() {
     const csrfToken = document.getElementById("csrfToken").value;
-
     const jsonBody = JSON.stringify({
         username: "mcartwri",
         password: "cat"
     });
-
     fetch("/createUser", { 
         method: "POST",
         headers: {"Content-Type": "application/json", 'Csrf-Token': csrfToken},
@@ -20,16 +18,21 @@ window.onload = () => {
         else
             console.log("Create failed");
     });
-    setTimeout(() => {
-        fetch("/validateUser", { 
-            method: "POST",
-            headers: {"Content-Type": "application/json", 'Csrf-Token': csrfToken},
-            body: jsonBody
-        }).then(res => res.json()).then(data => {
-            if(data !== undefined)
-                console.log("Login Got: " + data);
-            else
-                console.log("Login failed");
-        });
-    }, 10);
-};
+}
+function login() {
+    const csrfToken = document.getElementById("csrfToken").value;
+    const jsonBody = JSON.stringify({
+        username: "mcartwri",
+        password: "cat"
+    });
+    fetch("/validateUser", { 
+        method: "POST",
+        headers: {"Content-Type": "application/json", 'Csrf-Token': csrfToken},
+        body: jsonBody
+    }).then(res => res.json()).then(data => {
+        if(data !== undefined)
+            console.log("Login Got: " + data);
+        else
+            console.log("Login failed");
+    });
+}
