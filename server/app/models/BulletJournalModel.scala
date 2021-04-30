@@ -36,7 +36,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
         // }
     }
 
-    def getToDoList(userid: Int): Future[Seq[Unit]] = {
+    def getToDoList(userid: Int): Future[Seq[Task]] = {
         ???
     }
 
