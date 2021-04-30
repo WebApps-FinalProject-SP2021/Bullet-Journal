@@ -2,13 +2,8 @@
 
 @main("Bullet Journal") {
   <h1>Bullet Journal</h1>
-  <div id="root"></div>
-  
-  <!-- Used for testing LoginController -->
-  <button onclick="create()">Create</button>
-  <button onclick="login()">Login</button>
-
-  <script src="@routes.Assets.versioned("javascript/testScript.js")"></script>
-  <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
-  <!-- ~~~ -->
+  <button class="mdc-button foo-button">
+    <div class="mdc-button__ripple"></div>
+    <span class="mdc-button__label">Button</span>
+  </button>
 }
