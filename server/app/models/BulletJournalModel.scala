@@ -21,7 +21,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     }
 
     def createUser(username: String, password: String): Future[Option[Int]] = {
-        ??
+        ???
         // val matches = db.run(Users.filter(userRow => userRow.username === username).result)
         // matches.flatMap { userRows =>
         //     if (userRows.isEmpty) {
