@@ -1,9 +1,13 @@
 @()(implicit request: RequestHeader)
 
 @main("Bullet Journal") {
-  <h1>Bullet Journal</h1>
+  <body>
+    <div id = "reactRoot"></div>
+  </body> 
+  <script src= "@routes.Assets.versioned("javascript/testReact.js")"></script>
+  <!-- <h1>Bullet Journal</h1>
   <button class="mdc-button foo-button">
     <div class="mdc-button__ripple"></div>
     <span class="mdc-button__label">Button</span>
-  </button>
+  </button> -->
 }
