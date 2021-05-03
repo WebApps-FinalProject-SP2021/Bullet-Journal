@@ -1,6 +1,6 @@
 package models
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.ZoneId
 import java.sql.Timestamp
 import slick.jdbc.PostgresProfile.api._
@@ -36,22 +36,52 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
         }
     }
 
-    def getToDoList(userid: Int): Future[Seq[Task]] = {
+    def getAllTasks(userid: Int): Future[Seq[Task]] = {
         db.run(
             (for {
-                task <- Tasks if task.userId === userid
+                day <- Days
+                task <- Tasks if task.userId === userid && task.dayId === day.id
             } yield {
                 task
             }).result
-        ).map(tasks => tasks.map(task => Task(task.title, task.description, task.completed)))
+        ).map(tasks => tasks.map(task => {
+            Task(task.title, task.description, task.completed, getDate(task.dueDate), getDate(task.reminder))
+        }))
+    }
+
+    def getTasksForDay(userid: Int, dayid: Int): Future[Seq[Task]] = {
+        db.run(
+            (for {
+                task <- Tasks if task.userId === userid && task.dayId === dayid
+            } yield {
+                task
+            }).result
+        ).map(tasks => tasks.map(task => {
+            Task(task.title, task.description, task.completed, getDate(task.dueDate), getDate(task.reminder))
+        }))
+    }
+
+    private def getDate(odate: Option[java.sql.Date]): Option[LocalDate] = {
+        odate match {
+            case Some(date) => Some(date.toLocalDate)
+            case None => None
+        }
     }
 
     def addTask(task: Task, userid: Int, dayid: Int): Future[Int] = {
         db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, null, null, userid, dayid))
     }
 
-    def getCalendar(userid: Int): Future[Unit] = {
-        ???
+    def getAllDays(userid: Int): Future[Seq[Day]] = {
+        db.run(
+            (for {
+                day <- Days if day.userId === userid
+            } yield {
+                day
+            }).result
+        ).map(days => days.map(day => {
+            Day(day.date.toLocalDate, day.mood)
+        }))
     }
 
     def saveToDoList(userid: Int, toDoList: Seq[Unit]): Future[Int] = {
