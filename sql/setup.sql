@@ -31,6 +31,7 @@ create table tasks (
     id serial primary key not null, 
     title varchar(200) not null, 
     completed boolean not null, 
+    description varchar(2000) not null,
     due_date date, 
     reminder date, 
     user_id int4 references users(id) on delete cascade not null, 

@@ -9,35 +9,44 @@ import models.Tables._
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import org.mindrot.jbcrypt.BCrypt
 
 class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
 
     def validateUser(username: String, password: String): Future[Option[Int]] = {
-        ???
-        // val matches = db.run(Users.filter(userRow => userRow.username === username).result)
-        // matches.map(userRows => userRows.headOption.flatMap { userRow => 
-        //     if (password == userRow.password) Some(userRow.id) else None
-        // })
+        val matches = db.run(Users.filter(userRow => userRow.username === username).result)
+        matches.map(userRows => userRows.headOption.flatMap { userRow => 
+            if (BCrypt.checkpw(password, userRow.password)) Some(userRow.id) else None
+        })
     }
 
     def createUser(username: String, password: String): Future[Option[Int]] = {
-        ???
-        // val matches = db.run(Users.filter(userRow => userRow.username === username).result)
-        // matches.flatMap { userRows =>
-        //     if (userRows.isEmpty) {
-        //         db.run(Users += UsersRow(-1, username, password))
-        //         .flatMap { addCount => 
-        //             if (addCount > 0) {
-        //                 db.run(Users.filter(userRow => userRow.username === username).result).map(_.headOption.map(_.id))
-        //             }
-        //             else Future.successful(None)
-        //         }
-        //     } else Future.successful(None)
-        // }
+        val matches = db.run(Users.filter(userRow => userRow.username === username).result)
+        matches.flatMap { userRows =>
+            if (userRows.isEmpty) {
+                db.run(Users += UsersRow(-1, username, BCrypt.hashpw(password, BCrypt.gensalt()))
+                .flatMap { addCount => 
+                    if (addCount > 0) {
+                        db.run(Users.filter(userRow => userRow.username === username).result).map(_.headOption.map(_.id))
+                    }
+                    else Future.successful(None)
+                }
+            } else Future.successful(None)
+        }
     }
 
-    def getToDoList(userid: Int): Future[Seq[Unit]] = {
-        ???
+    def getToDoList(userid: Int): Future[Seq[Task]] = {
+        db.run(
+            (for {
+                task <- Tasks if item.userId === userid
+            } yield {
+                task
+            }).result
+        ).map(tasks => tasks.map(task => Task(task.title, item.description, task.completed)))
+    }
+
+    def addTask(task: Task, userid: Int, dayid: Int): Future[Int] {
+        db.run(Tasks += TasksRow(-1, task.title, tasks.description, task.completed, null, null, userid, dayid))
     }
 
     def getCalendar(userid: Int): Future[Unit] = {

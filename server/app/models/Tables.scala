@@ -109,21 +109,22 @@ trait Tables {
    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
    *  @param title Database column title SqlType(varchar), Length(200,true)
    *  @param completed Database column completed SqlType(bool)
+   *  @param description Database column description SqlType(varchar), Length(2000,true)
    *  @param dueDate Database column due_date SqlType(date), Default(None)
    *  @param reminder Database column reminder SqlType(date), Default(None)
    *  @param userId Database column user_id SqlType(int4)
    *  @param dayId Database column day_id SqlType(int4) */
-  case class TasksRow(id: Int, title: String, completed: Boolean, dueDate: Option[java.sql.Date] = None, reminder: Option[java.sql.Date] = None, userId: Int, dayId: Int)
+  case class TasksRow(id: Int, title: String, completed: Boolean, description: String, dueDate: Option[java.sql.Date] = None, reminder: Option[java.sql.Date] = None, userId: Int, dayId: Int)
   /** GetResult implicit for fetching TasksRow objects using plain SQL queries */
   implicit def GetResultTasksRow(implicit e0: GR[Int], e1: GR[String], e2: GR[Boolean], e3: GR[Option[java.sql.Date]]): GR[TasksRow] = GR{
     prs => import prs._
-    TasksRow.tupled((<<[Int], <<[String], <<[Boolean], <<?[java.sql.Date], <<?[java.sql.Date], <<[Int], <<[Int]))
+    TasksRow.tupled((<<[Int], <<[String], <<[Boolean], <<[String], <<?[java.sql.Date], <<?[java.sql.Date], <<[Int], <<[Int]))
   }
   /** Table description of table tasks. Objects of this class serve as prototypes for rows in queries. */
   class Tasks(_tableTag: Tag) extends profile.api.Table[TasksRow](_tableTag, "tasks") {
-    def * = (id, title, completed, dueDate, reminder, userId, dayId) <> (TasksRow.tupled, TasksRow.unapply)
+    def * = (id, title, completed, description, dueDate, reminder, userId, dayId) <> (TasksRow.tupled, TasksRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = ((Rep.Some(id), Rep.Some(title), Rep.Some(completed), dueDate, reminder, Rep.Some(userId), Rep.Some(dayId))).shaped.<>({r=>import r._; _1.map(_=> TasksRow.tupled((_1.get, _2.get, _3.get, _4, _5, _6.get, _7.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = ((Rep.Some(id), Rep.Some(title), Rep.Some(completed), Rep.Some(description), dueDate, reminder, Rep.Some(userId), Rep.Some(dayId))).shaped.<>({r=>import r._; _1.map(_=> TasksRow.tupled((_1.get, _2.get, _3.get, _4.get, _5, _6, _7.get, _8.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column id SqlType(serial), AutoInc, PrimaryKey */
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
@@ -131,6 +132,8 @@ trait Tables {
     val title: Rep[String] = column[String]("title", O.Length(200,varying=true))
     /** Database column completed SqlType(bool) */
     val completed: Rep[Boolean] = column[Boolean]("completed")
+    /** Database column description SqlType(varchar), Length(2000,true) */
+    val description: Rep[String] = column[String]("description", O.Length(2000,varying=true))
     /** Database column due_date SqlType(date), Default(None) */
     val dueDate: Rep[Option[java.sql.Date]] = column[Option[java.sql.Date]]("due_date", O.Default(None))
     /** Database column reminder SqlType(date), Default(None) */
