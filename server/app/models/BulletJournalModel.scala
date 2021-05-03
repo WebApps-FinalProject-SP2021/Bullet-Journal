@@ -10,6 +10,7 @@ import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import org.mindrot.jbcrypt.BCrypt
+import DataTypes._
 
 class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
 
@@ -20,11 +21,11 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
         })
     }
 
-    def createUser(username: String, password: String): Future[Option[Int]] = {
+    def createUser(username: String, password: String, fullname: String, email: String): Future[Option[Int]] = {
         val matches = db.run(Users.filter(userRow => userRow.username === username).result)
         matches.flatMap { userRows =>
             if (userRows.isEmpty) {
-                db.run(Users += UsersRow(-1, username, BCrypt.hashpw(password, BCrypt.gensalt()))
+                db.run(Users += UsersRow(-1, username, BCrypt.hashpw(password, BCrypt.gensalt()), fullname, email))
                 .flatMap { addCount => 
                     if (addCount > 0) {
                         db.run(Users.filter(userRow => userRow.username === username).result).map(_.headOption.map(_.id))
@@ -38,15 +39,15 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     def getToDoList(userid: Int): Future[Seq[Task]] = {
         db.run(
             (for {
-                task <- Tasks if item.userId === userid
+                task <- Tasks if task.userId === userid
             } yield {
                 task
             }).result
-        ).map(tasks => tasks.map(task => Task(task.title, item.description, task.completed)))
+        ).map(tasks => tasks.map(task => Task(task.title, task.description, task.completed)))
     }
 
-    def addTask(task: Task, userid: Int, dayid: Int): Future[Int] {
-        db.run(Tasks += TasksRow(-1, task.title, tasks.description, task.completed, null, null, userid, dayid))
+    def addTask(task: Task, userid: Int, dayid: Int): Future[Int] = {
+        db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, null, null, userid, dayid))
     }
 
     def getCalendar(userid: Int): Future[Unit] = {

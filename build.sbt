@@ -18,6 +18,7 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
 		"com.typesafe.play" %% "play-slick" % "5.0.0",
 		"com.typesafe.slick" %% "slick-codegen" % "3.3.3",
     "org.postgresql" % "postgresql" % "42.2.18",
+    "org.mindrot" % "jbcrypt" % "0.4",
     "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
     specs2 % Test
   )
