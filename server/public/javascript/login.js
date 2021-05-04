@@ -3,6 +3,7 @@ console.log("Running version 4.");
 
 const validateRoute = document.getElementById("validateRoute").value;
 const createRoute = document.getElementById("createRoute").value;
+const csrfToken = document.getElementById("csrfToken").value;
 
 const ce = React.createElement
 
