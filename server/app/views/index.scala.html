@@ -1,6 +1,9 @@
 @()(implicit request: RequestHeader)
 
 @main("Bullet Journal") {
+  <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
+  <input type="hidden" id="createRoute" value="@routes.LoginController.createUser()">
+  <input type="hidden" id="validateRoute" value="@routes.LoginController.validateUser()">
   <body>
     <div id = "reactRoot"></div>
   </body> 

@@ -1,6 +1,9 @@
 // import './stylesheets/theme.css';
 console.log("Running version 4.");
 
+const validateRoute = document.getElementById("validateRoute").value;
+const createRoute = document.getElementById("createRoute").value;
+
 const ce = React.createElement
 
 class checkLogIn extends React.Component {
@@ -41,18 +44,23 @@ class LoginComponent extends React.Component {
         'Username: ',
         ce('input', {type: "text", id: "loginName", value: this.state.loginName, onChange: e => this.changerHandler(e)}),
         ce('br'),
+        ce('br'),
         'Password: ',
         ce('input', {type: "password", id: "loginPass", value: this.state.loginPass, onChange: e => this.changerHandler(e)}),
+        ce('br'),
         ce('br'),
         ce('button', {onClick: e => this.login(e)}, 'Login'),
         ce('span', {id: "login-message"}, this.state.loginMessage),
         ce('h2', null, 'Create User:'),
         ce('br'),
+        ce('br'),
         'Name: ',
         ce('input', {type: "text", id: "createName", value: this.state.createName, onChange: e => this.changerHandler(e)}),
         ce('br'),
+        ce('br'),
         'User Name: ',
         ce('input', {type: "text", id: "createUserName", value: this.state.createUserName, onChange: e => this.changerHandler(e)}),
+        ce('br'),
         ce('br'),
         'Password: ',
         ce('input', {type: "password", id: "createPass", value: this.state.createPass, onChange: e => this.changerHandler(e)}),
@@ -60,6 +68,7 @@ class LoginComponent extends React.Component {
         ce('br'),
         'Email: ',
         ce('input', {type: "email", id: "createEmail", value: this.state.createEmail, onChange: e => this.changerHandler(e)}),
+        ce('br'),
         ce('br'),
         
         ce('button', {onClick: e => this.createUser(e)}, 'Create User'),
@@ -74,7 +83,7 @@ class LoginComponent extends React.Component {
     login(e) {
       const username = this.state.loginName;
       const password = this.state.loginPass;
-      fetch(validateUser, { 
+      fetch(validateRoute, { 
         method: 'POST',
         headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
         body: JSON.stringify({ username, password })
@@ -93,7 +102,7 @@ class LoginComponent extends React.Component {
         const username = this.state.createUserName;
         const password = this.state.createPass;
         const email = this.state.createEmail;
-        fetch(createUser, {  // change route 
+        fetch(createRoute, {  // change route 
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
             body: JSON.stringify({ name, username, password, email })
@@ -104,10 +113,10 @@ class LoginComponent extends React.Component {
               this.setState({ loginMessage: "Login Failed" });
             }
           });
-        }
+    }
     
 
-    }
+    
   }
 
 
