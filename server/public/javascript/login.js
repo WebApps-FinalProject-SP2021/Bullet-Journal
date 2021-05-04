@@ -26,6 +26,7 @@ class LoginComponent extends React.Component {
         loginName: "", 
         loginPass: "", 
         createName: "", 
+        createUserName: "", 
         createPass: "",
         createEmail: "",
         loginMessage: "",
@@ -47,8 +48,11 @@ class LoginComponent extends React.Component {
         ce('span', {id: "login-message"}, this.state.loginMessage),
         ce('h2', null, 'Create User:'),
         ce('br'),
-        'Username: ',
+        'Name: ',
         ce('input', {type: "text", id: "createName", value: this.state.createName, onChange: e => this.changerHandler(e)}),
+        ce('br'),
+        'User Name: ',
+        ce('input', {type: "text", id: "createUserName", value: this.state.createUserName, onChange: e => this.changerHandler(e)}),
         ce('br'),
         'Password: ',
         ce('input', {type: "password", id: "createPass", value: this.state.createPass, onChange: e => this.changerHandler(e)}),
@@ -70,7 +74,7 @@ class LoginComponent extends React.Component {
     login(e) {
       const username = this.state.loginName;
       const password = this.state.loginPass;
-      fetch(validateRoute, { 
+      fetch(validateUser, { 
         method: 'POST',
         headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
         body: JSON.stringify({ username, password })
@@ -81,6 +85,28 @@ class LoginComponent extends React.Component {
           this.setState({ loginMessage: "Login Failed" });
         }
       });
+    }
+
+    createUser(e)
+    {
+        const name = this.state.createName;
+        const username = this.state.createUserName;
+        const password = this.state.createPass;
+        const email = this.state.createEmail;
+        fetch(createUser, {  // change route 
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
+            body: JSON.stringify({ name, username, password, email })
+          }).then(res => res.json()).then(data => {
+            if(data) {
+              this.props.doLogin();
+            } else {
+              this.setState({ loginMessage: "Login Failed" });
+            }
+          });
+        }
+    
+
     }
   }
 
