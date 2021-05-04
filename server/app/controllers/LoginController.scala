@@ -18,7 +18,8 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
 
   import LoginController._
   private val model = new BulletJournalModel(db)
-  implicit val userDataReads = Json.reads[UserData]
+  implicit val loginDataReads = Json.reads[LoginUserData]
+  implicit val createDataReads = Json.reads[CreateUserData]
   
   def withJsonBody[A](f: A => Future[Result])(implicit request: Request[AnyContent], reads: Reads[A]): Future[Result] = {
     //Loads Json of type A and calls function with that data
@@ -30,10 +31,15 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     }.getOrElse(Future.successful(Redirect(routes.LoginController.index())))
   }
 
-  def userRequest(requestMethod: (String, String) => Future[Option[Int]])(implicit request: Request[AnyContent]) = {
-    //Processess user validation and creation
-    withJsonBody[UserData]{ userData =>
-      val userIdFutureOption = requestMethod(userData.username, userData.password)
+  def index = Action { implicit request =>
+    //Shows the primary view
+    Ok(views.html.index())
+  }
+
+  def validateUser = Action.async { implicit request =>
+    //Checks if username and password is valid
+    withJsonBody[LoginUserData]{ userData =>
+      val userIdFutureOption = model.validateUser(userData.username, userData.password)
       userIdFutureOption.map { userIdOption =>
         userIdOption.map { userId =>
           Ok(Json.toJson(true))
@@ -45,23 +51,23 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     }
   }
 
-  def index = Action { implicit request =>
-    //Shows the primary view
-    Ok(views.html.index())
-  }
-
-  def validateUser = Action.async { implicit request =>
-    //Checks if username and password is valid
-    userRequest(model.validateUser)
-  }
-
   def createUser = Action.async { implicit request =>
     //Creates new username with password
-    userRequest(model.createUser)
+    withJsonBody[CreateUserData]{ userData =>
+      val userIdFutureOption = model.createUser(userData.username, userData.password, userData.fullname, userData.email)
+      userIdFutureOption.map { userIdOption =>
+        userIdOption.map { userId =>
+          Ok(Json.toJson(true))
+            .withSession("username" -> userData.username, "userid" -> userId.toString, "csrfToken" -> play.filters.csrf.CSRF.getToken.map(_.value).getOrElse(""))
+        }.getOrElse {
+          Ok(Json.toJson(false))
+        }
+      }
+    }
   }
 }
 
-
 object LoginController {
-  case class UserData(username: String, password: String)
+  case class CreateUserData(username: String, password: String, fullname: String, email: String)
+  case class LoginUserData(username: String, password: String)
 }
