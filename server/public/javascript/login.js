@@ -27,6 +27,7 @@ class LoginComponent extends React.Component {
         loginPass: "", 
         createName: "", 
         createPass: "",
+        createEmail: "",
         loginMessage: "",
         createMessage: ""
       };
@@ -52,6 +53,11 @@ class LoginComponent extends React.Component {
         'Password: ',
         ce('input', {type: "password", id: "createPass", value: this.state.createPass, onChange: e => this.changerHandler(e)}),
         ce('br'),
+        ce('br'),
+        'Email: ',
+        ce('input', {type: "email", id: "createEmail", value: this.state.createEmail, onChange: e => this.changerHandler(e)}),
+        ce('br'),
+        
         ce('button', {onClick: e => this.createUser(e)}, 'Create User'),
         ce('span', {id: "create-message"}, this.state.createMessage)
       );
