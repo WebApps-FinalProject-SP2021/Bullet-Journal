@@ -2,7 +2,7 @@
 
 create database bullet_journal;
 
--- \c bullet_journal;
+\c bullet_journal;
 -- connects current user to the database;
 
 create table users (
@@ -39,6 +39,6 @@ create table tasks (
 
 set timezone = 'America/Chicago';
 
-create user charg;
+create user charg with password 'password';
 grant all privileges on database bullet_journal to charg;
 alter user charg with superuser;
