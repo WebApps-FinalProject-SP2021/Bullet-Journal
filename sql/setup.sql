@@ -38,3 +38,7 @@ create table tasks (
     day_id int4 references days(id) on delete cascade not null);
 
 set timezone = 'America/Chicago';
+
+create user charg;
+grant all privileges on database bullet_journal to charg;
+alter user charg with superuser;

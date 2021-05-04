@@ -3,6 +3,7 @@ console.log("Running version 4.");
 
 const validateRoute = document.getElementById("validateRoute").value;
 const createRoute = document.getElementById("createRoute").value;
+const csrfToken = document.getElementById("csrfToken").value;
 
 const ce = React.createElement
 
@@ -14,7 +15,7 @@ class checkLogIn extends React.Component {
   
     render() {
       if (this.state.loggedIn) {
-        ce('h2', null, 'This is where the home page would go')
+        return ce('h2', null, 'This is where the home page would go')
       } else {
         return ce(LoginComponent, { doLogin: () => this.setState( { loggedIn: true }) });
       }
@@ -98,14 +99,14 @@ class LoginComponent extends React.Component {
 
     createUser(e)
     {
-        const name = this.state.createName;
+        const fullname = this.state.createName;
         const username = this.state.createUserName;
         const password = this.state.createPass;
         const email = this.state.createEmail;
-        fetch(createRoute, {  // change route 
+        fetch(createRoute, {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
-            body: JSON.stringify({ name, username, password, email })
+            body: JSON.stringify({ fullname, username, password, email })
           }).then(res => res.json()).then(data => {
             if(data) {
               this.props.doLogin();
