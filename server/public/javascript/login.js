@@ -15,7 +15,7 @@ class checkLogIn extends React.Component {
   
     render() {
       if (this.state.loggedIn) {
-        ce('h2', null, 'This is where the home page would go')
+        return ce('h2', null, 'This is where the home page would go')
       } else {
         return ce(LoginComponent, { doLogin: () => this.setState( { loggedIn: true }) });
       }
