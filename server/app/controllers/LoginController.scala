@@ -28,11 +28,11 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
         case JsSuccess(a, path) => f(a)
         case e @ JsError(_) =>
           println("Error in LoginController: " + e)
-          Future.successful(Json.toJson(false))
+          Future.successful(Ok(Json.toJson(false)))
       }
     }.getOrElse {
       println("Error in LoginController: cannot read JSON body")
-      Future.successful(Json.toJson(false))
+      Future.successful(Ok(Json.toJson(false)))
     }
   }
 
