@@ -39,6 +39,122 @@ class LoginComponent extends React.Component {
     }
   
     render() {
+      ce("div",
+        {
+          class: "row"
+        },
+        ce(
+          "form",
+          {
+            class: "col s12"
+          },
+          ce(
+            "div",
+            {
+              class: "row"
+            },
+            ce(
+              "div",
+              {
+                class: "input-field col s6"
+              },
+              ce("input", {
+                id: "first_name",
+                type: "text",
+                class: "validate"
+              }),
+              ce(
+                "label",
+                {
+                  for: "first_name"
+                },
+                "First Name"
+              )
+            ),
+            ce(
+              "div",
+              {
+                class: "input-field col s6"
+              },
+              ce("input", {
+                id: "last_name",
+                type: "text",
+                class: "validate"
+              }),
+              ce(
+                "label",
+                {
+                  for: "last_name"
+                },
+                "Last Name"
+              )
+            )
+          ),
+          ce(
+            "div",
+            {
+              class: "row"
+            },
+            ce(
+              "div",
+              {
+                class: "input-field col s12"
+              },
+              ce("input", {
+                disabled: true,
+                value: "I am not editable",
+                id: "disabled",
+                type: "text",
+                class: "validate"
+              }),
+              ce(
+                "label",
+                {
+                  for: "disabled"
+                },
+                "Disabled"
+              )
+            )
+          ),
+          ce(
+            "div",
+            {
+              class: "row"
+            },
+            ce(
+              "div",
+              {
+                class: "input-field col s12"
+              },
+              ce(
+                "input",
+                {
+                  id: "password",
+                  type: "password",
+                  class: "validate"
+                },
+                ce(
+                  "label",
+                  {
+                    for: "password"
+                  },
+                  "Password"
+                )
+              )
+            )
+          ),
+          ce(
+            "div",
+            {
+              class: "row"
+            },
+            ce("div", {class: "input-field col s12"},
+              ce('input', {type: "email", id: "createEmail", value: this.state.createEmail, onChange: e => this.changerHandler(e)}),
+              ce("label", {for: "email"}, "Email")
+            )
+          )
+        )
+      )
       return ce('div', null,
         ce('h2', null, 'Login:'),
         ce('br'),
