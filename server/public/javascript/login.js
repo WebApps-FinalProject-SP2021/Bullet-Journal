@@ -93,7 +93,7 @@ class LoginComponent extends React.Component {
       this.setState({ [e.target['id']]: e.target.value });
     }
   
-    log
+    login(e) {
       const username = this.state.loginName;
       const password = this.state.loginPass;
       fetch(validateRoute, { 
