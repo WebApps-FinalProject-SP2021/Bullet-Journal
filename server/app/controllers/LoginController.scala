@@ -26,9 +26,14 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     request.body.asJson.map { body =>
       Json.fromJson[A](body) match {
         case JsSuccess(a, path) => f(a)
-        case e @ JsError(_) => Future.successful(Redirect(routes.LoginController.index()))
+        case e @ JsError(_) =>
+          println("Error in LoginController: " + e)
+          Future.successful(Ok(Json.toJson(false)))
       }
-    }.getOrElse(Future.successful(Redirect(routes.LoginController.index())))
+    }.getOrElse {
+      println("Error in LoginController: cannot read JSON body")
+      Future.successful(Ok(Json.toJson(false)))
+    }
   }
 
   def index = Action { implicit request =>
