@@ -88,50 +88,12 @@ class LoginComponent extends React.Component {
         )
       )
     );}
-
-      // return ce('div', null,
-      //   ce('h2', null, 'Login:'),
-      //   ce('br'),
-      //   'Username: ',
-      //   ce('input', {type: "text", id: "loginName", value: this.state.loginName, onChange: e => this.changerHandler(e)}),
-      //   ce('br'),
-      //   ce('br'),
-      //   'Password: ',
-      //   ce('input', {type: "password", id: "loginPass", value: this.state.loginPass, onChange: e => this.changerHandler(e)}),
-      //   ce('br'),
-      //   ce('br'),
-      //   ce('button', {onClick: e => this.login(e)}, 'Login'),
-      //   ce('span', {id: "login-message"}, this.state.loginMessage),
-      //   ce('h2', null, 'Create User:'),
-      //   ce('br'),
-      //   ce('br'),
-      //   'Name: ',
-      //   ce('input', {type: "text", id: "createName", value: this.state.createName, onChange: e => this.changerHandler(e)}),
-      //   ce('br'),
-      //   ce('br'),
-      //   'User Name: ',
-      //   ce('input', {type: "text", id: "createUserName", value: this.state.createUserName, onChange: e => this.changerHandler(e)}),
-      //   ce('br'),
-      //   ce('br'),
-      //   'Password: ',
-      //   ce('input', {type: "password", id: "createPass", value: this.state.createPass, onChange: e => this.changerHandler(e)}),
-      //   ce('br'),
-      //   ce('br'),
-      //   'Email: ',
-      //   ce('input', {type: "email", id: "createEmail", value: this.state.createEmail, onChange: e => this.changerHandler(e)}),
-      //   ce('br'),
-      //   ce('br'),
-        
-      //   ce('button', {onClick: e => this.createUser(e)}, 'Create User'),
-      //   ce('span', {id: "create-message"}, this.state.createMessage)
-      // );
-      // }
   
     changerHandler(e) {
       this.setState({ [e.target['id']]: e.target.value });
     }
   
-    login(e) {
+    log
       const username = this.state.loginName;
       const password = this.state.loginPass;
       fetch(validateRoute, { 
