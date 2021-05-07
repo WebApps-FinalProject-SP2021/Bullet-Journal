@@ -1,4 +1,4 @@
-// import './stylesheets/theme.css';
+// import M from "../../materialize/js";
 console.log("Running version 4.");
 
 const validateRoute = document.getElementById("validateRoute").value;
@@ -37,58 +37,69 @@ class LoginComponent extends React.Component {
         createMessage: ""
       };
     }
+
+    componentDidMount() {
+      M.AutoInit();
+    }
   
     render() { return(
       ce("div", {className: "container"},
           ce("div", {className: "row"},
             ce("form", {className: "col s12 m6 offset-m3"},
               ce("h3", {className: "center-align"}, "Bullet Journal"),
-              ce("div", {className: "divider"}),
-              ce("div", {className: "section"},
-                ce("div", {className: "row valign-wrapper"},
-                  ce("div", {className: "input-field col s4", id: "loginNameDiv"},
-                    ce("label", {htmlFor: "loginName"}, "Username"),
-                    ce("input", {type: "text", id: "loginName", value: this.state.loginName, onChange: e => this.changerHandler(e)}),
+              ce("ul", {className: "collapsible"},
+                ce("li", {className: "active", key: "loginListItem"},
+                  ce("div", {className: "collapsible-header active"}, "Log In"),
+                  ce("div", {className: "collapsible-body"},
+                    ce("div", {className: "row valign-wrapper"},
+                      ce("div", {className: "input-field col s4", id: "loginNameDiv"},
+                        ce("label", {htmlFor: "loginName"}, "Username"),
+                        ce("input", {type: "text", id: "loginName", value: this.state.loginName, onChange: e => this.changerHandler(e)}),
+                      ),
+                      ce("div", {className: "input-field col s4", id: "loginPassDiv"},
+                        ce("label", {htmlFor: "loginPass"}, "Password"),
+                        ce("input", {type: "password", id: "loginPass", onChange: e => this.changerHandler(e)}),
+                      ),
+                      ce("div", {className: "col s1"}),
+                      ce("div", {className: "col s3"},
+                        ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.login(e)}, "Log in"),
+                        ce("span", {id: "login-message"}, this.state.loginMessage),
+                      ),
+                    ),
                   ),
-                  ce("div", {className: "input-field col s4", id: "loginPassDiv"},
-                    ce("label", {htmlFor: "loginPass"}, "Password"),
-                    ce("input", {type: "password", id: "loginPass", onChange: e => this.changerHandler(e)}),
-                  ),
-                  ce("div", {className: "col s4"},
-                    ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.login(e)}, "Log in"),
-                    ce("span", {id: "login-message"}, this.state.loginMessage),
+                ),
+                ce("li", {key: "signupListItem"},
+                  ce("div", {className: "collapsible-header"}, "Sign Up"),
+                  ce("div", {className: "collapsible-body"},
+                    ce("div", {className: "row"},
+                      ce("div", {className: "input-field col s12", id: "createNameDiv"},
+                        ce("label", {htmlFor: "createName"}, "Name"),
+                        ce("input", {type: "text", id: "createName", value: this.state.createName, onChange: e => this.changerHandler(e)}),
+                      ),
+                    ),
+                    ce("div", {className: "row"},
+                      ce("div", {className: "input-field col s12", id: "createEmailDiv"},
+                        ce("label", {htmlFor: "createEmail"}, "Email"),
+                        ce('input', {type: "email", id: "createEmail", value: this.state.createEmail, onChange: e => this.changerHandler(e)}),
+                      )
+                    ),
+                    ce("div", {className: "row"},
+                      ce("div", {className: "input-field inline col s6", id: "createUserNameDiv"},
+                        ce("label", {htmlFor: "createUserName"}, "Username"),
+                        ce("input", {type: "text", id: "createUserName", value: this.state.createUserName, onChange: e => this.changerHandler(e)}),
+                      ),
+                      ce("div", {className: "input-field inline col s6", id: "createPassDiv"},
+                        ce("label", {htmlFor: "createPass"}, "Password"),
+                        ce("input", {type: "password", id: "createPass", value: this.state.createPass, onChange: e => this.changerHandler(e)}),
+                      ),
+                    ),
+                    ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.createUser(e)}, "Create Account"),
+                    ce('span', {id: "create-message"}, this.state.createMessage),
                   ),
                 ),
               ),
-            ce("div", {className: "divider"}),
-            ce("div", {className: "section"},
-              ce("div", {className: "row"},
-                ce("div", {className: "input-field col s12", id: "createNameDiv"},
-                  ce("label", {htmlFor: "createName"}, "Name"),
-                  ce("input", {type: "text", id: "createName", value: this.state.createName, onChange: e => this.changerHandler(e)}),
-                ),
-              ),
-              ce("div", {className: "row"},
-                ce("div", {className: "input-field col s12", id: "createEmailDiv"},
-                  ce("label", {htmlFor: "createEmail"}, "Email"),
-                  ce('input', {type: "email", id: "createEmail", value: this.state.createEmail, onChange: e => this.changerHandler(e)}),
-                )
-              ),
-              ce("div", {className: "row"},
-                ce("div", {className: "input-field inline col s6", id: "createUserNameDiv"},
-                  ce("label", {htmlFor: "createUserName"}, "Username"),
-                  ce("input", {type: "text", id: "createUserName", value: this.state.createUserName, onChange: e => this.changerHandler(e)}),
-                ),
-                ce("div", {className: "input-field inline col s6", id: "createPassDiv"},
-                  ce("label", {htmlFor: "createPass"}, "Password"),
-                  ce("input", {type: "password", id: "createPass", value: this.state.createPass, onChange: e => this.changerHandler(e)}),
-                )
-              )
             ),
-              ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.createUser(e)}, "Create Account"),
-              ce('span', {id: "create-message"}, this.state.createMessage)
-            )
-          )
+          ),
         )
       );}
   
