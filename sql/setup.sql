@@ -13,11 +13,14 @@ create table users (
     email varchar(40) not null);
 
 create table friends (
-    id serial primary key not null, 
+    id serial primary key not null,
+    pending boolean not null,
+    user_id int4 references users(id) on delete cascade not null,
     friend_id int4 references users(id) on delete cascade not null);
 
  create table habits (
      id serial primary key not null, 
+     title varchar(100) not null,
      description varchar(2000) not null, 
      user_id int4 references users(id) on delete cascade not null);
 

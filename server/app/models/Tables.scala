@@ -52,48 +52,59 @@ trait Tables {
 
   /** Entity class storing rows of table Friends
    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+   *  @param pending Database column pending SqlType(bool)
+   *  @param userId Database column user_id SqlType(int4)
    *  @param friendId Database column friend_id SqlType(int4) */
-  case class FriendsRow(id: Int, friendId: Int)
+  case class FriendsRow(id: Int, pending: Boolean, userId: Int, friendId: Int)
   /** GetResult implicit for fetching FriendsRow objects using plain SQL queries */
-  implicit def GetResultFriendsRow(implicit e0: GR[Int]): GR[FriendsRow] = GR{
+  implicit def GetResultFriendsRow(implicit e0: GR[Int], e1: GR[Boolean]): GR[FriendsRow] = GR{
     prs => import prs._
-    FriendsRow.tupled((<<[Int], <<[Int]))
+    FriendsRow.tupled((<<[Int], <<[Boolean], <<[Int], <<[Int]))
   }
   /** Table description of table friends. Objects of this class serve as prototypes for rows in queries. */
   class Friends(_tableTag: Tag) extends profile.api.Table[FriendsRow](_tableTag, "friends") {
-    def * = (id, friendId) <> (FriendsRow.tupled, FriendsRow.unapply)
+    def * = (id, pending, userId, friendId) <> (FriendsRow.tupled, FriendsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = ((Rep.Some(id), Rep.Some(friendId))).shaped.<>({r=>import r._; _1.map(_=> FriendsRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = ((Rep.Some(id), Rep.Some(pending), Rep.Some(userId), Rep.Some(friendId))).shaped.<>({r=>import r._; _1.map(_=> FriendsRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column id SqlType(serial), AutoInc, PrimaryKey */
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column pending SqlType(bool) */
+    val pending: Rep[Boolean] = column[Boolean]("pending")
+    /** Database column user_id SqlType(int4) */
+    val userId: Rep[Int] = column[Int]("user_id")
     /** Database column friend_id SqlType(int4) */
     val friendId: Rep[Int] = column[Int]("friend_id")
 
     /** Foreign key referencing Users (database name friends_friend_id_fkey) */
-    lazy val usersFk = foreignKey("friends_friend_id_fkey", friendId, Users)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
+    lazy val usersFk1 = foreignKey("friends_friend_id_fkey", friendId, Users)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
+    /** Foreign key referencing Users (database name friends_user_id_fkey) */
+    lazy val usersFk2 = foreignKey("friends_user_id_fkey", userId, Users)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
   }
   /** Collection-like TableQuery object for table Friends */
   lazy val Friends = new TableQuery(tag => new Friends(tag))
 
   /** Entity class storing rows of table Habits
    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+   *  @param title Database column title SqlType(varchar), Length(100,true)
    *  @param description Database column description SqlType(varchar), Length(2000,true)
    *  @param userId Database column user_id SqlType(int4) */
-  case class HabitsRow(id: Int, description: String, userId: Int)
+  case class HabitsRow(id: Int, title: String, description: String, userId: Int)
   /** GetResult implicit for fetching HabitsRow objects using plain SQL queries */
   implicit def GetResultHabitsRow(implicit e0: GR[Int], e1: GR[String]): GR[HabitsRow] = GR{
     prs => import prs._
-    HabitsRow.tupled((<<[Int], <<[String], <<[Int]))
+    HabitsRow.tupled((<<[Int], <<[String], <<[String], <<[Int]))
   }
   /** Table description of table habits. Objects of this class serve as prototypes for rows in queries. */
   class Habits(_tableTag: Tag) extends profile.api.Table[HabitsRow](_tableTag, "habits") {
-    def * = (id, description, userId) <> (HabitsRow.tupled, HabitsRow.unapply)
+    def * = (id, title, description, userId) <> (HabitsRow.tupled, HabitsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = ((Rep.Some(id), Rep.Some(description), Rep.Some(userId))).shaped.<>({r=>import r._; _1.map(_=> HabitsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = ((Rep.Some(id), Rep.Some(title), Rep.Some(description), Rep.Some(userId))).shaped.<>({r=>import r._; _1.map(_=> HabitsRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column id SqlType(serial), AutoInc, PrimaryKey */
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column title SqlType(varchar), Length(100,true) */
+    val title: Rep[String] = column[String]("title", O.Length(100,varying=true))
     /** Database column description SqlType(varchar), Length(2000,true) */
     val description: Rep[String] = column[String]("description", O.Length(2000,varying=true))
     /** Database column user_id SqlType(int4) */
