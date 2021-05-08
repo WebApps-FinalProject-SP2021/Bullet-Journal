@@ -60,7 +60,6 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     //Creates new username with password
     withJsonBody[CreateUserData]{ userData =>
       val userIdFutureOption = model.createUser(userData.username, userData.password, userData.fullname, userData.email)
-      println(model.getAllDays(5))
       userIdFutureOption.map { userIdOption =>
         userIdOption.map { userId =>
           Ok(Json.toJson(true))
