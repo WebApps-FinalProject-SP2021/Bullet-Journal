@@ -2,7 +2,7 @@ package models
 
 import java.time.LocalDate
 import java.time.ZoneId
-import java.sql.Timestamp
+import java.sql.Date
 import slick.jdbc.PostgresProfile.api._
 import scala.concurrent.ExecutionContext
 import models.Tables._
@@ -32,11 +32,23 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 db.run(Users += UsersRow(-1, username, BCrypt.hashpw(password, BCrypt.gensalt()), fullname, email))
                 .flatMap { addCount => 
                     if (addCount > 0) {
-                        db.run(Users.filter(userRow => userRow.username === username).result).map(_.headOption.map(_.id))
+                        val user = db.run(Users.filter(userRow => userRow.username === username).result)
+                        val numMonths = 6
+                        user.foreach(rows => rows.map(row => createMonths(numMonths, row.id)))
+                        user.map(_.headOption.map(_.id))
                     }
                     else Future.successful(None)
                 }
             } else Future.successful(None)
+        }
+    }
+
+    private def createMonths(months: Int, userid: Int): Unit = {
+        val days = ((months * 30) + (months / 2)).toInt
+        val today = LocalDate.now()
+        for(day <- 0 until days) {
+            val nextDay = today.plusDays(day)
+            db.run(Days += DaysRow(-1, Date.valueOf(nextDay.toString()), None, userid))
         }
     }
 
@@ -88,7 +100,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     }
 
     // Returns all the Day objects for a given user
-    // Supposed to be a sort of calendar
+    // Supposed to be a kind of calendar
+    // TODO: make sure days are sorted
     def getAllDays(userid: Int): Future[Seq[Day]] = {
         db.run(
             (for {
