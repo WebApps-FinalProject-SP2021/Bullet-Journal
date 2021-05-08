@@ -99,9 +99,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
         db.run(Tasks.filter(_.id === taskid).delete).map(count => count > 0)
     }
 
-    // Returns all the Day objects for a given user
+    // Returns all the sorted Day objects for a given user
     // Supposed to be a kind of calendar
-    // TODO: make sure days are sorted
     def getAllDays(userid: Int): Future[Seq[Day]] = {
         db.run(
             (for {
@@ -109,8 +108,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             } yield {
                 day
             }).result
-        ).map(days => days.map(day => {
-            Day(day.date.toLocalDate, day.mood)
+        ).map(days => days.map(day => Day(day.date.toLocalDate, day.mood)).sortWith((day1, day2) => {
+            day1.date.compareTo(day2.date) < day2.date.compareTo(day1.date)
         }))
     }
 
