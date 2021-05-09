@@ -137,7 +137,7 @@ class LoginComponent extends React.Component {
           if(data) {
             this.props.doLogin();
           } else {
-             this.setState({ loginMessage: "Login Failed" });
+             this.setState({ createMessage: "User Creation Failed" });
           }
         });
     }
