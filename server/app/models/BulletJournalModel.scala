@@ -43,6 +43,42 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
         }
     }
 
+    // Updates user's fullname and email with value passed in
+    // Returns integer > 0 if successful, 0 otherwise 
+    def editUserDetails(userid: Int, fullname: String, email: String): Future[Int] = {
+        db.run(
+            (for {
+                user <- Users if user.id === userid
+            } yield {
+                (user.fullname, user.email)
+            }).update(fullname, email)
+        )
+    }
+
+    // Updates user's fullname with value passed in
+    // Returns integer > 0 if successful, 0 otherwise 
+    def editUserFullname(userid: Int, fullname: String): Future[Int] = {
+        db.run(
+            (for {
+                user <- Users if user.id === userid
+            } yield {
+                user.fullname
+            }).update(fullname)
+        )
+    }
+
+    // Updates user's email with value passed in
+    // Returns integer > 0 if successful, 0 otherwise 
+    def editUserEmail(userid: Int, email: String): Future[Int] = {
+        db.run(
+            (for {
+                user <- Users if user.id === userid
+            } yield {
+                user.email
+            }).update(email)
+        )
+    }
+
     private def createMonths(months: Int, userid: Int): Unit = {
         val days = ((months * 30) + (months / 2)).toInt
         val today = LocalDate.now()
@@ -60,11 +96,11 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 day <- Days
                 task <- Tasks if task.userId === userid && task.dayId === day.id
             } yield {
-                task
+                (task, day.id)
             }).result
-        ).map(tasks => tasks.map(task => {
-            Task(task.title, task.description, task.completed, getDate(task.dueDate), getDate(task.reminder))
-        }))
+        ).map(tasks => tasks.map{case (task, dayid) => {
+            Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
+        }})
     }
 
     // Returns all tasks for the given user and day
@@ -76,11 +112,11 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 task
             }).result
         ).map(tasks => tasks.map(task => {
-            Task(task.title, task.description, task.completed, getDate(task.dueDate), getDate(task.reminder))
+            Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
         }))
     }
 
-    private def getDate(odate: Option[java.sql.Date]): Option[LocalDate] = {
+    private def getTimeDate(odate: Option[java.sql.Date]): Option[LocalDate] = {
         odate match {
             case Some(date) => Some(date.toLocalDate)
             case None => None
@@ -90,13 +126,35 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     // Creates new task for given user and day with Task object supplied
     // Returns integer > 0 if successful, 0 otherwise
     def addTask(task: Task, userid: Int, dayid: Int): Future[Int] = {
-        db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, null, null, userid, dayid))
+        db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, None, None, userid, dayid))
     }
 
     // Deletes given task
     // Returns whether or not deletion was successful
-    def deleteTask(taskid: Int): Future[Boolean] = {
+    def removeTask(taskid: Int): Future[Boolean] = {
         db.run(Tasks.filter(_.id === taskid).delete).map(count => count > 0)
+    }
+
+
+    // Updates task with values passed in
+    // Returns integer > 0 if successful, 0 otherwise
+    // TODO: ask Morgan C if requiring each parameter is okay
+    // TODO: add dayid as parameter to allow tasks to be moved into other days
+    def editTask(taskid: Int, title: String, completed: Boolean, description: String, dueDate: Option[LocalDate], reminder: Option[LocalDate]): Future[Int] = {
+        db.run(
+            (for {
+                task <- Tasks if task.id === taskid
+            } yield {
+                (task.title, task.completed, task.description, task.dueDate, task.reminder)
+            }).update((title, completed, description, getSQLDate(dueDate), getSQLDate(reminder)))
+        )
+    }
+
+    private def getSQLDate(odate: Option[LocalDate]): Option[java.sql.Date] = {
+        odate match {
+            case Some(date) => Some(Date.valueOf(date.toString()))
+            case None => None
+        }
     }
 
     // Returns all the sorted Day objects for a given user
@@ -108,9 +166,21 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             } yield {
                 day
             }).result
-        ).map(days => days.map(day => Day(day.date.toLocalDate, day.mood)).sortWith((day1, day2) => {
+        ).map(days => days.map(day => Day(day.id, day.date.toLocalDate, day.mood)).sortWith((day1, day2) => {
             day1.date.compareTo(day2.date) < day2.date.compareTo(day1.date)
         }))
+    }
+
+    // Updates mood for the given user day
+    // Returns integer > 0 if successful, 0 otherwise
+    def editMood(dayid: Int, mood: Option[Int]): Future[Int] = {
+        db.run(
+            (for {
+                day <- Days if day.id === dayid
+            } yield {
+                day.mood
+            }).update(mood)
+        )
     }
 
     // Returns all the Habit objects for a given user
@@ -122,7 +192,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 habit
             }).result
         ).map(habits => habits.map(habit => {
-            Habit(habit.title, habit.description)
+            Habit(habit.id, habit.title, habit.description)
         }))
     }
 
@@ -136,6 +206,18 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     // Returns whether or not deletion was successful
     def removeHabit(habitid: Int): Future[Boolean] = {
         db.run(Habits.filter(_.id === habitid).delete).map(count => count > 0)
+    }
+
+    // Updates habit with given title and description
+    // Returns integer > 0 if successful, 0 otherwise
+    def editHabit(habitid: Int, title: String, description: String): Future[Int] = {
+        db.run(
+            (for {
+                habit <- Habits if habit.id === habitid
+            } yield {
+                (habit.title, habit.description)
+            }).update((title, description))
+        )
     }
 
     // Gets all friends (accepted or pending) for given user
@@ -152,10 +234,10 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
 
                 //friend <- Friends if friend.friendId === userid
             } yield {
-                (user, userFriend, friend.pending)
+                (user, userFriend, friend.pending, friend.id)
             }).result
         ).map(statuses => statuses.map(status => {
-            FriendStatus(status._1.username, status._2.username, status._3)
+            FriendStatus(status._4, status._1.username, status._2.username, status._3)
         }))
     }
 
@@ -172,8 +254,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             (for {
                 friend <- Friends if friend.userId === senderid && friend.friendId === friendid
             } yield {
-                friend
-            }).update(FriendsRow(-1, true, senderid, friendid))
+                (friend.pending, friend.userId, friend.friendId)
+            }).update((true, senderid, friendid))
         )
     }
 
