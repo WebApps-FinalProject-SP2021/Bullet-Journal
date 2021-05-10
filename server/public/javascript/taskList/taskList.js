@@ -1,6 +1,7 @@
 const ce = React.createElement
 
 
+
 export class TaskList extends React.Component {
     constructor(props) {
         super(props);
@@ -25,7 +26,6 @@ export class TaskList extends React.Component {
                             ce("div", {className: "card-content"},
                                 ce('span', {className: "card-title"}, "List"),
                                     ce(Task, { show: () => {this.setState({isShowing: !this.state.isShowing})}}, null)
-                     
                             )
                         )
                     ),
@@ -97,21 +97,33 @@ class EditTask extends React.Component {
         return(
             ce("div", {className: "container"},
                 ce("div",{className: "row"},
-                    ce("div",{className: "input-field col s6"},
-                        // ce('input ', {placeholder:"tempplaceholder" , id: "edit-task"}),// need to add on chnage handler
-                        ce('div', null, "Temp Text" ),
-                    ),
-                    ce("div",{className: "input-field col s6"},
-                        
-                    ),
-                    ce("div",{className: "input-field col s3"},
-                        
-                    ),
-                    ce("div",{className: "input-field col s3"},
-                        
-                    ),
-                    ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.editTask(e)}, "Save"),
-                    ce('span', {id: "edit-task"}, this.state.createMessage)
+                    ce("form",{className: "col s12"},
+                        ce("div",{className: "row"},
+                            ce("div",{className: "input-field col s12"},
+                                ce('label', {htmlFor:"edit_title"}, "Task Title" ),
+                                ce('input', {type: "text", id: "edit_title",  className: "validate"}),// need to add on change handler
+                            ), 
+                        ),
+                        ce("div",{className: "row"},
+                            ce("div",{className: "input-field col s12"},
+                                ce('label', {htmlFor:"edit_description"}, "Description" ),
+                                ce('input', {type: "text", id: "edit_description",  className: "validate"}),
+                            ),
+                        ),
+                        ce("div",{className: "row"},
+                            ce("div",{className: "input-field col s6"},
+                                ce('label', {htmlFor:"edit_due_date"}, "Due Date" ),
+                                ce('input', {type: "text", id: "edit_due_date",  className: "validate"}),
+                            ),
+                            ce("div",{className: "input-field col s6"},
+                                ce('label', {htmlFor:"edit_reminder_date"}, "Reminder Date" ),
+                                ce('input', {type: "text", id: "edit_reminder_date",  className: "datepicker"}),
+                            ),
+                        ),
+                            ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.editTask(e)}, "Save"),
+                            ce('span', {id: "edit-task"}, this.state.createMessage)
+                       
+                    )
                 )
             )
         );
@@ -128,36 +140,10 @@ class EditTask extends React.Component {
 
 ReactDOM.render(
     ce(TaskList, null, null),
-    document.getElementById('reactRoot')
-  );
-
-  
-                // ce("li", {key: "editTask"},
-                // ce("div", {className: "collapsible-header"}, "Edit"),
-                // ce("div", {className: "collapsible-body"},
-                //     ce("div", {className: "row"},
-                //         ce("div", {className: "input-field col s12", id: "titleDiv"},
-                //             ce("label", {htmlFor: "title"}, "Task Title"),
-                //             ce("input", {type: "text", id: "title", value: this.state.title, onChange: e => this.changerHandler(e)}),
-                //         ),
-                //     ),
-                //     ce("div", {className: "row"},
-                //         ce("div", {className: "input-field col s12", id: "descriptionDiv"},
-                //             ce("label", {htmlFor: "description"}, "Description"),
-                //             ce('input', {type: "description", id: "description", value: this.state.description, onChange: e => this.changerHandler(e)}),
-                //         )
-                //     ),
-                //     ce("div", {className: "row"},
-                //         ce("div", {className: "input-field inline col s6", id: "dueDate"},
-                //             ce("label", {htmlFor: "dueDate"}, "Due Date"),
-                //             ce("input", {type: "text", id: "dueDate", value: this.state.dueDate, onChange: e => this.changerHandler(e)}),
-                //         ),
-                //         ce("div", {className: "input-field inline col s6", id: "reminderDiv"},
-                //             ce("label", {htmlFor: "reminder"}, "Reminder"),
-                //             ce("input", {type: "reminder", id: "reminder", value: this.state.reminder, onChange: e => this.changerHandler(e)}),
-                //         ),
-                //     ),
-                //     ce("div", {className: "row"},
-                //     //Todo add an indicator/checkmark for when a task is completed 
-                //     )
-                // ),
+    document.getElementById('reactRoot'),
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     var elems = document.querySelectorAll('.datepicker');
+    //     var instances = M.Datepicker.init(elems, autoClose);
+    //   }),
+    
+);
