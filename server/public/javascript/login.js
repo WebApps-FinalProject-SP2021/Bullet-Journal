@@ -1,4 +1,5 @@
 // import M from "../../materialize/js";
+import { TaskList } from './taskList.js';
 console.log("Running version 4.");
 
 const validateRoute = document.getElementById("validateRoute").value;
@@ -15,7 +16,8 @@ class checkLogIn extends React.Component {
   
     render() {
       if (this.state.loggedIn) {
-        return ce('h2', null, 'This is where the home page would go')
+        //return ce('h2', null, 'This is where the home page would go')
+        return ce(TaskList);
       } else {
         return ce(LoginComponent, { doLogin: () => this.setState( { loggedIn: true }) });
       }
