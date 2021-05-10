@@ -4,6 +4,10 @@
   <input type="hidden" id="csrfToken" value="@helper.CSRF.getToken.value">
   <input type="hidden" id="createRoute" value="@routes.LoginController.createUser()">
   <input type="hidden" id="validateRoute" value="@routes.LoginController.validateUser()">
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  
   <body>
     <div id = "reactRoot"></div>
   </body> 
@@ -12,4 +16,5 @@
   <script type="module" src="@routes.Assets.versioned("javascript/overviewPage.js")"></script>
   <script type="module" src="@routes.Assets.versioned("javascript/journalPage.js")"></script>
   <script type="module" src="@routes.Assets.versioned("javascript/calendarPage.js")"></script>
+  <script type="module" src="@routes.Assets.versioned("javascript/taskList.js")"></script>
 }
