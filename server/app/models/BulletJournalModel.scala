@@ -99,7 +99,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 task
             }).result
         ).map(tasks => tasks.map(task => {
-            Task(task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
+            Task(task.id, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
         }))
     }
 
@@ -112,7 +112,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 task
             }).result
         ).map(tasks => tasks.map(task => {
-            Task(task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
+            Task(task.id, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
         }))
     }
 
@@ -131,7 +131,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
 
     // Deletes given task
     // Returns whether or not deletion was successful
-    def deleteTask(taskid: Int): Future[Boolean] = {
+    def removeTask(taskid: Int): Future[Boolean] = {
         db.run(Tasks.filter(_.id === taskid).delete).map(count => count > 0)
     }
 
@@ -192,7 +192,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 habit
             }).result
         ).map(habits => habits.map(habit => {
-            Habit(habit.title, habit.description)
+            Habit(habit.id, habit.title, habit.description)
         }))
     }
 
@@ -234,10 +234,10 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
 
                 //friend <- Friends if friend.friendId === userid
             } yield {
-                (user, userFriend, friend.pending)
+                (user, userFriend, friend.pending, friend.id)
             }).result
         ).map(statuses => statuses.map(status => {
-            FriendStatus(status._1.username, status._2.username, status._3)
+            FriendStatus(status._4, status._1.username, status._2.username, status._3)
         }))
     }
 
