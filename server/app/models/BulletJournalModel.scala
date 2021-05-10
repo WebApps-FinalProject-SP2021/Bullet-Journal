@@ -138,15 +138,14 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
 
     // Updates task with values passed in
     // Returns integer > 0 if successful, 0 otherwise
-    // TODO: ask Morgan C if requiring each parameter is okay
     // TODO: add dayid as parameter to allow tasks to be moved into other days
-    def editTask(taskid: Int, title: String, completed: Boolean, description: String, dueDate: Option[LocalDate], reminder: Option[LocalDate]): Future[Int] = {
+    def editTask(taskid: Int, task: Task): Future[Int] = {
         db.run(
             (for {
                 task <- Tasks if task.id === taskid
             } yield {
                 (task.title, task.completed, task.description, task.dueDate, task.reminder)
-            }).update((title, completed, description, getSQLDate(dueDate), getSQLDate(reminder)))
+            }).update((task.title, task.completed, task.description, getSQLDate(task.dueDate), getSQLDate(task.reminder)))
         )
     }
 
@@ -210,13 +209,13 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
 
     // Updates habit with given title and description
     // Returns integer > 0 if successful, 0 otherwise
-    def editHabit(habitid: Int, title: String, description: String): Future[Int] = {
+    def editHabit(habitid: Int, habit: Habit): Future[Int] = {
         db.run(
             (for {
                 habit <- Habits if habit.id === habitid
             } yield {
                 (habit.title, habit.description)
-            }).update((title, description))
+            }).update((habit.title, habit.description))
         )
     }
 

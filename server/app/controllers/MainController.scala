@@ -94,7 +94,7 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   //Delete task from model
   def deleteTask() = Action.async { implicit request =>
     withJsonBody[Int]{ taskid => 
-      model.deleteTask(taskid).map(deleted => Ok(Json.toJson(deleted)))
+      model.removeTask(taskid).map(deleted => Ok(Json.toJson(deleted)))
     }
   }
   
