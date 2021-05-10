@@ -7,5 +7,5 @@ object DataTypes {
     //case class Task(title: String, description: String, completed: Boolean)
     case class Day(dayid: Int, date: LocalDate, mood: Option[Int])
     case class Habit(habitid: Int, title: String, description: String)
-    case class FriendStatus(statusid: String, user: String, friend: String, pending: Boolean)
+    case class FriendStatus(statusid: Int, user: String, friend: String, pending: Boolean)
 }

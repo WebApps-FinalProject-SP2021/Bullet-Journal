@@ -166,7 +166,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             } yield {
                 day
             }).result
-        ).map(days => days.map(day => Day(day.date.toLocalDate, day.mood)).sortWith((day1, day2) => {
+        ).map(days => days.map(day => Day(day.id, day.date.toLocalDate, day.mood)).sortWith((day1, day2) => {
             day1.date.compareTo(day2.date) < day2.date.compareTo(day1.date)
         }))
     }
