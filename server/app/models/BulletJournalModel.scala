@@ -96,11 +96,11 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 day <- Days
                 task <- Tasks if task.userId === userid && task.dayId === day.id
             } yield {
-                task
+                (task, day.id)
             }).result
-        ).map(tasks => tasks.map(task => {
-            Task(task.id, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
-        }))
+        ).map(tasks => tasks.map{case (task, dayid) => {
+            Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
+        }})
     }
 
     // Returns all tasks for the given user and day
@@ -112,7 +112,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
                 task
             }).result
         ).map(tasks => tasks.map(task => {
-            Task(task.id, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
+            Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
         }))
     }
 
