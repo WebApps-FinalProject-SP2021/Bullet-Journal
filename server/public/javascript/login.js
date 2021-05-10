@@ -68,7 +68,6 @@ class LoginComponent extends React.Component {
                       ce("div", {className: "col s1"}),
                       ce("div", {className: "col s3"},
                         ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.login(e)}, "Log in"),
-                        ce("span", {id: "login-message"}, this.state.loginMessage),
                       ),
                     ),
                   ),
@@ -99,9 +98,12 @@ class LoginComponent extends React.Component {
                       ),
                     ),
                     ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.createUser(e)}, "Create Account"),
-                    ce('span', {id: "create-message"}, this.state.createMessage),
                   ),
                 ),
+              ),
+              ce("div", {className: "col s12", id: "failure-notif"},
+                ce("p", {id: "login-message", className: "center-align"}, this.state.loginMessage),
+                ce('p', {id: "create-message", className: "center-align"}, this.state.createMessage),
               ),
             ),
           ),
@@ -124,7 +126,7 @@ class LoginComponent extends React.Component {
         if(data) {
           this.props.doLogin();
         } else {
-          this.setState({ loginMessage: "Login Failed" });
+          this.setState({ loginMessage: "Login failed" });
         }
       });
     }
@@ -142,7 +144,7 @@ class LoginComponent extends React.Component {
           if(data) {
             this.props.doLogin();
           } else {
-             this.setState({ createMessage: "User Creation Failed" });
+             this.setState({ createMessage: "Account couldn't be created" });
           }
         });
     }
