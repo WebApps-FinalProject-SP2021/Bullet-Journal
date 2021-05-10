@@ -1,3 +1,5 @@
+// import { Page } from "./page.js"
+
 const ce = React.createElement
 
 export class Home extends React.Component {
@@ -41,7 +43,7 @@ export class Home extends React.Component {
                         )
                     )
                 ),
-                ce(Page, {currentPage: this.state.currentPage}),
+                ce(Page)  // {currentPage: this.state.currentPage}),
             )
         )
     }

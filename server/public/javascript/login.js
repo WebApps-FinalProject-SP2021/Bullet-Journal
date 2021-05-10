@@ -1,4 +1,7 @@
-import { Home } from "./home.js"
+import { OverviewPage } from "./overviewPage.js"
+import { CalendarPage } from "./calendarPage.js"
+import { JournalPage } from "./journalPage.js"
+
 console.log("Running version 4.");
 
 const validateRoute = document.getElementById("validateRoute").value;
@@ -15,7 +18,7 @@ class checkLogIn extends React.Component {
   
     render() {
       if (this.state.loggedIn) {
-        return ce(Home);
+        return ce(OverviewPage);
       } else {
         return ce(LoginComponent, { doLogin: () => this.setState( { loggedIn: true }) });
       }
