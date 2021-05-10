@@ -82,12 +82,17 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   //Add task to model
   def addTask() = Action.async { implicit request =>
+    println("hello")
     withUserId { userid =>
-      withDayId { dayid =>
+      println("hello 2")
+      //withDayId { dayid =>
+        println("hello 3")
+        println(request.body)
         withJsonBody[Task] { task =>
-          model.addTask(task, userid, dayid).map(numAdded => Ok(Json.toJson(numAdded > 1)))
+          println(task)
+          model.addTask(task, userid, 1).map(numAdded => Ok(Json.toJson(numAdded > 0)))
         }
-      }
+      //}
     }
   }
 
@@ -116,7 +121,7 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   def addHabit() = Action.async { implicit request =>
     withUserId { userid =>
       withJsonBody[Habit] { habit =>
-        model.addHabit(habit, userid).map(numAdded => Ok(Json.toJson(numAdded > 1)))
+        model.addHabit(habit, userid).map(numAdded => Ok(Json.toJson(numAdded > 0)))
       }
     }
   }
