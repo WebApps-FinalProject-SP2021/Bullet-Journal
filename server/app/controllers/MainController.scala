@@ -88,12 +88,6 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     }
   }
 
-  // Takes task and updates values of that task
-  def editTask() = Action.async { implicit request =>
-    withJsonBody[Task] { task =>
-      model.editTask(task.taskid, task).map(numEdited => Ok(Json.toJson(numEdited > 0)))
-    }
-  }
   
   // Gets all days for current user
   def getAllDays() = Action.async { implicit request =>
