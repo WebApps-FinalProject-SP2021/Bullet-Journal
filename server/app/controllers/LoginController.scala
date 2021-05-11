@@ -36,13 +36,20 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     }
   }
 
+  // Loads user id from session
+  def withUserId(f: Int => Future[Result])(implicit request: Request[AnyContent]) = {
+    request.session.get("userid").map { userid =>
+      f(userid.toInt)
+    }.getOrElse(Future.successful(Ok(Json.toJson(false))))
+  }
+
+  // Shows the primary view
   def index = Action { implicit request =>
-    //Shows the primary view
     Ok(views.html.index())
   }
 
+  // Checks if username and password is valid
   def validateUser = Action.async { implicit request =>
-    //Checks if username and password is valid
     withJsonBody[LoginUserData]{ userData =>
       val userIdFutureOption = model.validateUser(userData.username, userData.password)
       userIdFutureOption.map { userIdOption =>
@@ -56,8 +63,8 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     }
   }
 
+  // Creates new username with password
   def createUser = Action.async { implicit request =>
-    //Creates new username with password
     withJsonBody[CreateUserData]{ userData =>
       val userIdFutureOption = model.createUser(userData.username, userData.password, userData.fullname, userData.email)
       userIdFutureOption.map { userIdOption =>
@@ -67,6 +74,24 @@ class LoginController @Inject()(protected val dbConfigProvider: DatabaseConfigPr
         }.getOrElse {
           Ok(Json.toJson(false))
         }
+      }
+    }
+  }
+
+  // Takes a full name and updates current user to that name
+  def editUserFullname = Action.async { implicit request =>
+    withUserId { userid => 
+      withJsonBody[String] { fullname =>
+        model.editUserFullname(userid, fullname).map(numEdited => Ok(Json.toJson(numEdited > 0)))
+      }
+    }
+  }
+
+  // Takes an email and updates current user to that email
+  def editUserEmail = Action.async { implicit request =>
+    withUserId { userid => 
+      withJsonBody[String] { email =>
+        model.editUserFullname(userid, email).map(numEdited => Ok(Json.toJson(numEdited > 0)))
       }
     }
   }
