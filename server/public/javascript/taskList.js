@@ -2,6 +2,7 @@ const ce = React.createElement;
 
 const addTaskRoute = document.getElementById('addTaskRoute').value;
 const editTaskRoute = document.getElementById('editTaskRoute').value;
+const deleteTaskRoute = document.getElementById('deleteTaskRoute').value;
 const allTasksRoute = document.getElementById('allTasksRoute').value;
 const csrfToken = document.getElementById("csrfToken").value;
 
@@ -72,7 +73,7 @@ export class TaskList extends React.Component {
                             ce("div", {className: "card-content"},
                                 ce('span', {className: "card-title"}, "Task Details"),
                                     this.state.isEditing ? 
-                                        ce(EditTask, {editTask: (e) => this.editTask(e), onDataChange: (e) => this.changerHandler(e), taskState: this.state.editTask}, null) : 
+                                        ce(EditTask, {editTask: (e) => this.editTask(e), deleteTask: (e) => this.deleteTask(e), onDataChange: (e) => this.changerHandler(e), taskState: this.state.editTask}, null) : 
                                         this.state.isAdding ? 
                                             ce(AddTask, {addTask: (e) => this.addTask(e), onDataChange: (e) => this.changerHandler(e)}, null) : 
                                             ce("div", null, "Click a Task to see its details")
@@ -109,12 +110,30 @@ export class TaskList extends React.Component {
 
     editTask(e) {
         const task = this.state.editTask;
-        console.log(task);
+        //console.log(task);
         fetch(editTaskRoute, { 
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
             // TODO: fix dayid
             body: JSON.stringify({taskid: this.state.editTaskid, dayid: 1, title: task.title, description: task.description, completed: task.completed, dueDate: task.dueDate, reminder: task.reminder})
+          }).then(res => res.json()).then(data => {
+            if(data) {
+              console.log("success");
+              this.loadTasks();
+              //this.setState({ taskMessage: "", newTask: "" });
+            } else {
+              console.log("failure")
+              //this.setState({ taskMessage: "Failed to add." });
+            }
+          });
+    }
+
+    deleteTask(e) {
+        fetch(deleteTaskRoute, { 
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
+            // TODO: fix dayid
+            body: JSON.stringify(this.state.editTaskid)
           }).then(res => res.json()).then(data => {
             if(data) {
               console.log("success");
@@ -372,9 +391,13 @@ class EditTask extends React.Component {
                                 
                             ),
                         ),
-                        ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: (e) => this.props.editTask(e)}, "Save"),
+                        ce("div", {className: "row"},
+                            ce("div", {className: "col s4"}, 
+                                ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: (e) => this.props.editTask(e)}, "Save")),
+                            ce("div", {className: "col s4"}, 
+                                ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: (e) => this.props.deleteTask(e)}, "Delete")),
                             //ce('span', {id: "edit-task"}, this.state.createMessage)
-                       
+                        )
                     )
                 )
             )

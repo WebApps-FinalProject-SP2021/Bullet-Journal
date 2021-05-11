@@ -6,8 +6,8 @@
 GET        /                             controllers.LoginController.index
 POST       /validateUser                 controllers.LoginController.validateUser
 POST       /createUser                   controllers.LoginController.createUser
-GET        /getAllTasks                  controllers.MainController.getAllTasks
 
+GET        /getAllTasks                  controllers.MainController.getAllTasks
 GET        /getTasksForDay               controllers.MainController.getTasksForDay
 POST       /addTask                      controllers.MainController.addTask
 POST       /editTask                     controllers.MainController.editTask

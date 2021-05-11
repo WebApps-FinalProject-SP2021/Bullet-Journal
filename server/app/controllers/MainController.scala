@@ -31,11 +31,11 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
       Json.fromJson[A](body) match {
         case JsSuccess(a, path) => f(a)
         case e @ JsError(_) =>
-          println("Error in LoginController: " + e)
+          println("Error in MainController: " + e)
           Future.successful(Ok(Json.toJson(false)))
       }
     }.getOrElse {
-      println("Error in LoginController: cannot read JSON body")
+      println("Error in MainController: cannot read JSON body")
       Future.successful(Ok(Json.toJson(false)))
     }
   }
