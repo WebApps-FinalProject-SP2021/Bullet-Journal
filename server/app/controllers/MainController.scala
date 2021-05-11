@@ -82,17 +82,19 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   //Add task to model
   def addTask() = Action.async { implicit request =>
-    println("hello")
     withUserId { userid =>
-      println("hello 2")
       //withDayId { dayid =>
-        println("hello 3")
-        println(request.body)
         withJsonBody[Task] { task =>
-          println(task)
           model.addTask(task, userid, 1).map(numAdded => Ok(Json.toJson(numAdded > 0)))
         }
       //}
+    }
+  }
+
+  //Edit task in model
+  def editTask() = Action.async { implicit request =>
+    withJsonBody[Task]{ task => 
+      model.editTask(task.taskid, task).map(numEdited => Ok(Json.toJson(numEdited > 0)))
     }
   }
 

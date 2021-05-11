@@ -144,13 +144,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     // Returns integer > 0 if successful, 0 otherwise
     // TODO: add dayid as parameter to allow tasks to be moved into other days
     def editTask(taskid: Int, task: Task): Future[Int] = {
-        db.run(
-            (for {
-                task <- Tasks if task.id === taskid
-            } yield {
-                (task.title, task.completed, task.description, task.dueDate, task.reminder)
-            }).update((task.title, task.completed, task.description, getSQLDate(task.dueDate), getSQLDate(task.reminder)))
-        )
+        db.run((for {taskDB <- Tasks if taskDB.id === taskid} yield {taskDB.userId}).result).flatMap(userids => { val userid = userids.head
+            db.run(Tasks.filter(_.id === taskid).update(TasksRow(taskid, task.title, task.completed, task.description, getSQLDate(task.dueDate), getSQLDate(task.reminder), userid, task.dayid)))})
     }
 
     private def getSQLDate(odate: Option[LocalDate]): Option[java.sql.Date] = {

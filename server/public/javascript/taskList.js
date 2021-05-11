@@ -1,6 +1,7 @@
 const ce = React.createElement;
 
 const addTaskRoute = document.getElementById('addTaskRoute').value;
+const editTaskRoute = document.getElementById('editTaskRoute').value;
 const allTasksRoute = document.getElementById('allTasksRoute').value;
 const csrfToken = document.getElementById("csrfToken").value;
 
@@ -15,23 +16,27 @@ export class TaskList extends React.Component {
         //this.handleTitleChange = this.handleTitleChange.bind(this);
         this.state = { 
             tasks: [],
-            isShowingDetails: false, 
+            editTask: null,
+            editTitle: "",
+            editDescription: "",
+            //editcompleted: false,
+            editDueDate: "",
+            editReminderDate: "",
+            editTaskid: -1,
+            isEditing: false, 
             addTitle: "",
             addDescription: "",
-            completed: false,
+            //addcompleted: false,
             addDueDate: null,
             addReminderDate: null,
             isAdding: false,
+            completed: false,
         };
+        //this.taskElement = React.createRef();
     }
 
     changerHandler(e) {
         this.setState({ [e.target['id']]: e.target.value });
-    }
-
-
-    getTaskState() {
-        return {title: this.addTitle, description: this.addDescription, completed: this.completed, dueDate: this.addDueDate, reminder: this.addReminderDate}
     }
 
     componentDidMount() {
@@ -57,9 +62,8 @@ export class TaskList extends React.Component {
                         ce("div", {className: "card"},
                             ce("div", {className: "card-content"},
                                 ce('span', {className: "card-title"}, "List"),
-                                    //ce(Task, { show: () => this.setState({isShowing: !this.state.isShowing})}, null),
-                                this.state.tasks.map(task => ce(Task, {key: task.taskid, taskData: task, show: () => {this.setState({isShowingDetails: !this.state.isShowingDetails}); this.setState({isAdding: false})} }, null)),
-                                ce("a", {className: "waves-effect waves-light btn", onClick: (e) => {this.setState({isAdding: true}); this.setState({isShowingDetails: false})}}, "Add Task"),
+                                this.state.tasks.map(task => ce(Task, {key: task.id + task.title + task.description + task.dueDate + task.reminder, taskData: task, show: () => {this.setState({editTask: task}); this.setState({editTaskid: task.taskid}), this.setState({isEditing: !this.state.isEditing}); this.setState({isAdding: false})} }, null)),
+                                ce("a", {className: "waves-effect waves-light btn", onClick: (e) => {this.setState({isAdding: true}); this.setState({isEditing: false})}}, "Add Task"),
                             )
                         )
                     ),
@@ -67,10 +71,10 @@ export class TaskList extends React.Component {
                         ce("div", {className: "card"},
                             ce("div", {className: "card-content"},
                                 ce('span', {className: "card-title"}, "Task Details"),
-                                    this.state.isShowingDetails ? 
-                                        ce(EditTask, {isAdding: false, editTask: (e) => this.editTask(e), taskState: this.state.tasks[0]}, null) : 
+                                    this.state.isEditing ? 
+                                        ce(EditTask, {editTask: (e) => this.editTask(e), onDataChange: (e) => this.changerHandler(e), taskState: this.state.editTask}, null) : 
                                         this.state.isAdding ? 
-                                            ce(EditTask, {isAdding: true, addTask: (e) => this.addTask(e), onDataChange: (e) => this.changerHandler(e)}, null) : 
+                                            ce(AddTask, {addTask: (e) => this.addTask(e), onDataChange: (e) => this.changerHandler(e)}, null) : 
                                             ce("div", null, "Click a Task to see its details")
                             )
                         )
@@ -89,7 +93,7 @@ export class TaskList extends React.Component {
         fetch(addTaskRoute, { 
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
-            // TODO: replace nulls with option[date]
+            // TODO: fix dayid
             body: JSON.stringify({taskid: -1, dayid: 1, title: this.state.addTitle, description: this.state.addDescription, completed: false, dueDate: this.state.addDueDate, reminder: this.state.addReminderDate})
           }).then(res => res.json()).then(data => {
             if(data) {
@@ -104,18 +108,23 @@ export class TaskList extends React.Component {
     }
 
     editTask(e) {
-        // fetch(addTaskRoute, { 
-        //     method: 'POST',
-        //     headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
-        //     body: JSON.stringify(this.state.newTask)
-        //   }).then(res => res.json()).then(data => {
-        //     if(data) {
-        //       this.loadTasks();
-        //       //this.setState({ taskMessage: "", newTask: "" });
-        //     } else {
-        //       //this.setState({ taskMessage: "Failed to add." });
-        //     }
-        //   });
+        const task = this.state.editTask;
+        console.log(task);
+        fetch(editTaskRoute, { 
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
+            // TODO: fix dayid
+            body: JSON.stringify({taskid: this.state.editTaskid, dayid: 1, title: task.title, description: task.description, completed: task.completed, dueDate: task.dueDate, reminder: task.reminder})
+          }).then(res => res.json()).then(data => {
+            if(data) {
+              console.log("success");
+              this.loadTasks();
+              //this.setState({ taskMessage: "", newTask: "" });
+            } else {
+              console.log("failure")
+              //this.setState({ taskMessage: "Failed to add." });
+            }
+          });
     }
 }
 
@@ -124,17 +133,19 @@ class Task extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+          task: props.taskData,
           title: props.taskData.title, 
           description: props.taskData.description, 
           completed: props.taskData.completed, 
           dueDate: props.taskData.dueDate,
-          reminder: props.taskData.reminder       
+          reminder: props.taskData.reminder,
         };
     }
 
     flipCompleted(e) {
         // TODO: Ajax to update completed attribute in DB
     }
+
 
     render() {return(
         ce("div", {className: "container", onClick: e => this.props.show()}, 
@@ -145,8 +156,8 @@ class Task extends React.Component {
                 ce("i", {className: "material-icons circle pink lighten-1"}),
                 ce("span", {className: "title"}, this.state.title),
                 ce("div", null, ce("span", null,  this.state.description)),
-                this.state.dueDate == null ? ce("div", null, ce("span", null,  "No due date set")) : ce("div", null, ce("span", null,  "Due: " + this.state.dueDate)),
-                this.state.reminder == null ? ce("div", null, ce("span", null,  "No reminder date set")) : ce("div", null, ce("span", null,  "Reminder: " + this.state.reminder)),
+                this.state.dueDate == "" || this.state.dueDate == null ? ce("div", null, ce("span", null,  "No due date set")) : ce("div", null, ce("span", null,  "Due: " + this.state.dueDate)),
+                this.state.reminder == "" || this.state.reminder == null ? ce("div", null, ce("span", null,  "No reminder date set")) : ce("div", null, ce("span", null,  "Reminder: " + this.state.reminder)),
                 // this.state.completed ? ce('i', {className: "material-icons"}, 'check_box') : ce('i', {className: "material-icons"}, 'check_box_outline_blank'),
                 // ce("label", null, 
                 //     ce("input", {type: "checkbox", className: "filled-in", onClick: e  => this.flipCompleted()}, null),
@@ -164,14 +175,11 @@ class Task extends React.Component {
 }
 
 
-class EditTask extends React.Component {
+class AddTask extends React.Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
-        this.state = {
-            dueDate: "",
-            reminder: "",
-        };
+        // this.state = {
+        // };
     }
 
     handleChange(e) {
@@ -185,7 +193,6 @@ class EditTask extends React.Component {
             onSelect: () => {
                 const day = dueDateInstance.toString();
                 const e = {target: {id: "addDueDate", value: day}};
-                console.log(e);
                 this.props.onDataChange(e);
             }});
         const reminderDateInstance = M.Datepicker.init(document.getElementById("addReminderDate"), {
@@ -193,7 +200,6 @@ class EditTask extends React.Component {
             onSelect: () => {
                 const day = reminderDateInstance.toString();
                 const e = {target: {id: "addReminderDate", value: day}};
-                console.log(e);
                 this.props.onDataChange(e);
             }});
         }
@@ -205,15 +211,13 @@ class EditTask extends React.Component {
                     ce("form",{className: "col s12"},
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s12"},
-                                ce('label', {htmlFor:"edit_title"}, "Task Title" ),
-                                    this.props.isAdding ?
-                                        ce('input', {type: "text", id: "addTitle", onChange: (e) => this.handleChange(e),  className: "validate"}) :
-                                        ce('input', {type: "text", id: "editTitle",  onChange: (e) => console.log("changed"), className: "validate", value: "hello"})
+                                ce('label', {htmlFor:"addTitle"}, "Task Title" ),
+                                    ce('input', {type: "text", id: "addTitle", onChange: (e) => this.handleChange(e),  className: "validate"})
                             ), 
                         ),
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s12"},
-                                ce('label', {htmlFor:"edit_description"}, "Description" ),
+                                ce('label', {htmlFor:"addDescription"}, "Description" ),
                                 ce('input', {type: "text", id: "addDescription", onChange: (e) => this.handleChange(e),  className: "validate"}),
                             ),
                         ),
@@ -227,8 +231,88 @@ class EditTask extends React.Component {
                                 ce('input', {type: "text", id: "addReminderDate", className: "datepicker"}),
                             ),
                         ),
-                        this.props.isAdding ? ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.props.addTask(e)}, "Add") : ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.props.editTask(e)}, "Save"),
-                            ce('span', {id: "edit-task"}, this.state.createMessage)
+                        ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.props.addTask(e)}, "Add"),
+                            //ce('span', {id: "add-task"}, this.state.createMessage)
+                       
+                    )
+                )
+            )
+        );
+
+        
+
+        
+    }
+}
+
+class EditTask extends React.Component {
+    constructor(props) {
+        super(props);
+        const task = props.taskState;
+        this.state = {
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            reminder: task.reminder,
+        };
+    }
+
+    handleChange(e) {
+        // TODO: fix removal of last character
+        const task = {title: this.state.title, description: this.state.description, dueDate: this.state.dueDate, reminder: this.state.reminder, completed: false};
+        const ev = {target: {id: "editTask", value: task}};
+        this.props.onDataChange(ev);
+    }
+    
+    componentDidMount() {
+        M.AutoInit();
+        const dueDateInstance = M.Datepicker.init(document.getElementById("editDueDate"), {
+            format: "yyyy-mm-dd",
+            onSelect: () => {
+                const day = dueDateInstance.toString();
+                this.setState({dueDate: day});
+                this.handleChange(null);
+            }});
+        const reminderDateInstance = M.Datepicker.init(document.getElementById("editReminderDate"), {
+            format: "yyyy-mm-dd",
+            onSelect: () => {
+                const day = reminderDateInstance.toString();
+                this.setState({reminder: day});
+                this.handleChange(null);
+            }});
+        }
+
+
+    render() {
+        return(
+            ce("div", {className: "container"},
+                ce("div",{className: "row"},
+                    ce("form",{className: "col s12"},
+                        ce("div",{className: "row"},
+                            ce("div",{className: "input-field col s12"},
+                                ce('input', {type: "text", id: "editTitle",  onChange: (e) => {this.setState({title: e.target.value}); this.handleChange(e)}, className: "validate", defaultValue: this.state.title}, null),
+                                ce('label', {htmlFor:"editTitle", className:"active"}, "Task Title")                                
+                            ), 
+                        ),
+                        ce("div",{className: "row"},
+                            ce("div",{className: "input-field col s12"},
+                                ce('input', {type: "text", id: "editDescription", onChange: (e) => {this.setState({description: e.target.value}); this.handleChange(e)}, className: "validate", defaultValue: this.state.description}, null),
+                                ce('label', {htmlFor:"editDescription", className:"active"}, "Description" )
+                            ),
+                        ),
+                        ce("div",{className: "row"},
+                            ce("div",{className: "input-field col s6"},
+                                ce('input', {type: "text", id: "editDueDate", className: "datepicker", defaultValue: this.state.dueDate}, null),
+                                ce('label', {htmlFor:"editDueDate", className:"active"}, "Due Date" )
+                            ),
+                            ce("div",{className: "input-field col s6"},
+                                ce('input', {type: "text", id: "editReminderDate", className: "datepicker", defaultValue: this.state.reminder}, null),
+                                ce('label', {htmlFor:"editReminderDate", className:"active"}, "Reminder Date")
+                                
+                            ),
+                        ),
+                        ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: (e) => this.props.editTask(e)}, "Save"),
+                            //ce('span', {id: "edit-task"}, this.state.createMessage)
                        
                     )
                 )

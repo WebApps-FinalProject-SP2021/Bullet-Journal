@@ -7,13 +7,18 @@ GET        /                             controllers.LoginController.index
 POST       /validateUser                 controllers.LoginController.validateUser
 POST       /createUser                   controllers.LoginController.createUser
 GET        /getAllTasks                  controllers.MainController.getAllTasks
+
 GET        /getTasksForDay               controllers.MainController.getTasksForDay
 POST       /addTask                      controllers.MainController.addTask
+POST       /editTask                     controllers.MainController.editTask
 POST       /deleteTask                   controllers.MainController.deleteTask
+
 GET        /getAllDays                   controllers.MainController.getAllDays
+
 GET        /getHabits                    controllers.MainController.getHabits
 POST       /addHabit                     controllers.MainController.addHabit
 POST       /removeHabit                  controllers.MainController.removeHabit
+
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)
