@@ -63,7 +63,7 @@ export class TaskList extends React.Component {
                             ce("div", {className: "card-content"},
                                 ce('span', {className: "card-title"}, "List"),
                                 this.state.tasks.map(task => ce(Task, {key: task.id + task.title + task.description + task.dueDate + task.reminder, taskData: task, show: () => {this.setState({editTask: task}); this.setState({editTaskid: task.taskid}), this.setState({isEditing: !this.state.isEditing}); this.setState({isAdding: false})} }, null)),
-                                ce("a", {className: "waves-effect waves-light btn", onClick: (e) => {this.setState({isAdding: true}); this.setState({isEditing: false})}}, "Add Task"),
+                                ce("a", {className: "waves-effect waves-light btn", onClick: (e) => {this.setState({isAdding: !this.state.isAdding}); this.setState({isEditing: false})}}, "Add Task"),
                             )
                         )
                     ),
@@ -178,8 +178,18 @@ class Task extends React.Component {
 class AddTask extends React.Component {
     constructor(props) {
         super(props);
+        this.changeData("task", "");
+        this.changeData("description", "");
+        this.changeData("completed", false);
+        this.changeData("dueDate", null);
+        this.changeData("reminder", null);
         // this.state = {
         // };
+    }
+
+    changeData(id, value) {
+        const e = {target: {id: id, value: value}}
+        this.props.onDataChange(e);
     }
 
     handleChange(e) {
@@ -192,15 +202,39 @@ class AddTask extends React.Component {
             format: "yyyy-mm-dd",
             onSelect: () => {
                 const day = dueDateInstance.toString();
-                const e = {target: {id: "addDueDate", value: day}};
-                this.props.onDataChange(e);
+                this.changeData("addDueDate", day);
+            },
+            onOpen: () => {
+                console.log("open");
+                this.changeData("addDueDate", null);
+            },
+            onDraw: () => {
+                console.log("draw");
+                this.changeData("addDueDate", null);
+            },
+            onClose: () => {
+                console.log("closed");
+                // const e = {target: {id: "addDueDate", value: ""}};
+                // this.props.onDataChange(e);
             }});
         const reminderDateInstance = M.Datepicker.init(document.getElementById("addReminderDate"), {
             format: "yyyy-mm-dd",
             onSelect: () => {
                 const day = reminderDateInstance.toString();
-                const e = {target: {id: "addReminderDate", value: day}};
-                this.props.onDataChange(e);
+                this.changeData("addReminderDate", day);
+            },
+            onOpen: () => {
+                console.log("open");
+                this.changeData("addReminderDate", null);
+            },
+            onDraw: () => {
+                console.log("draw");
+                this.changeData("addReminderDate", null);
+            },
+            onClose: () => {
+                console.log("closed");
+                // const e = {target: {id: "addReminderDate", value: ""}};
+                // this.props.onDataChange(e);
             }});
         }
 
@@ -260,6 +294,7 @@ class EditTask extends React.Component {
     handleChange(e) {
         // TODO: fix removal of last character
         const task = {title: this.state.title, description: this.state.description, dueDate: this.state.dueDate, reminder: this.state.reminder, completed: false};
+        console.log(task);
         const ev = {target: {id: "editTask", value: task}};
         this.props.onDataChange(ev);
     }
@@ -272,14 +307,40 @@ class EditTask extends React.Component {
                 const day = dueDateInstance.toString();
                 this.setState({dueDate: day});
                 this.handleChange(null);
-            }});
+            },
+            onOpen: () => {
+                console.log("open");
+                this.setState({dueDate: null});
+            },
+            onDraw: () => {
+                console.log("draw");
+                this.setState({dueDate: null});
+            },
+            onClose: () => {
+                console.log("closed");
+                //this.setState({dueDate: ""});
+            }
+            });
         const reminderDateInstance = M.Datepicker.init(document.getElementById("editReminderDate"), {
             format: "yyyy-mm-dd",
             onSelect: () => {
                 const day = reminderDateInstance.toString();
                 this.setState({reminder: day});
                 this.handleChange(null);
-            }});
+            },
+            onOpen: () => {
+                console.log("open");
+                this.setState({reminder: null});
+            },
+            onDraw: () => {
+                console.log("draw");
+                this.setState({reminder: null});
+            },
+            onClose: () => {
+                console.log("closed");
+                //this.setState({reminder: ""});
+            }
+            });
         }
 
 
