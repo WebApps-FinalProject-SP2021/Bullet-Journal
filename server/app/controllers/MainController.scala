@@ -40,47 +40,30 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     }
   }
 
-  //Loads userid from session
+  // Loads user id from session
   def withUserId(f: Int => Future[Result])(implicit request: Request[AnyContent]) = {
     request.session.get("userid").map { userid =>
       f(userid.toInt)
     }.getOrElse(Future.successful(Ok(Json.toJson(false))))
   }
 
-  //Loads dayid from session
-  def withDayId(f: Int => Future[Result])(implicit request: Request[AnyContent]) = {
-    request.session.get("dayid").map { dayid =>
-      f(dayid.toInt)
-    }.getOrElse(Future.successful(Ok(Json.toJson(false))))
-  }
-
-  //Changes dayid of session, currently by receiving an id
-  //Will not be necessary if dayid is part of task object
-  def changeDay() = Action.async { implicit request =>
-    val oldSession = request.session
-    withJsonBody[Int]{ dayid =>
-      val newSession = oldSession + ("dayid" -> dayid.toString())
-      Future.successful(Ok(Json.toJson(true)).withSession(newSession))
-    }
-  }
-
-  //Gets all tasks for a user from model
+  // Gets all tasks for a user
   def getAllTasks() = Action.async { implicit request =>
     withUserId { userid =>
       model.getAllTasks(userid).map(tasks => Ok(Json.toJson(tasks)))
     }
   }
 
-  //Get tasks for current day and user from model
+  // Takes day id and gets all tasks for that day
   def getTasksForDay() = Action.async { implicit request =>
     withUserId { userid =>
-      withDayId { dayid =>
+      withJsonBody[Int] { dayid =>
         model.getTasksForDay(userid, dayid).map(tasks => Ok(Json.toJson(tasks)))
       }
     }
   }
 
-  //Add task to model
+  // Takes task and adds that task
   def addTask() = Action.async { implicit request =>
     withUserId { userid =>
       //withDayId { dayid =>
@@ -98,28 +81,42 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     }
   }
 
-  //Delete task from model
-  def deleteTask() = Action.async { implicit request =>
+  // Takes task id and removes that task
+  def removeTask() = Action.async { implicit request =>
     withJsonBody[Int]{ taskid => 
       model.removeTask(taskid).map(deleted => Ok(Json.toJson(deleted)))
     }
   }
+
+  // Takes task and updates values of that task
+  def editTask() = Action.async { implicit request =>
+    withJsonBody[Task] { task =>
+      model.editTask(task.taskid, task).map(numEdited => Ok(Json.toJson(numEdited > 0)))
+    }
+  }
   
-  //Get all days for a user from model
+  // Gets all days for current user
   def getAllDays() = Action.async { implicit request =>
     withUserId { userid =>
       model.getAllDays(userid).map(days => Ok(Json.toJson(days)))
     }
   }
 
-  //Get habit from model
+  // Takes day and updates mood for that day
+  def editMood() = Action.async { implicit request =>
+    withJsonBody[Day] { day =>
+      model.editMood(day.dayid, day.mood).map(numEdited => Ok(Json.toJson(numEdited > 0)))
+    }
+  }
+
+  // Gets habits for current user
   def getHabits() = Action.async { implicit request =>
     withUserId { userid =>
       model.getHabits(userid).map(habits => Ok(Json.toJson(habits)))
     }
   }
 
-  //Add habit to model
+  // Takes habit and adds that habit
   def addHabit() = Action.async { implicit request =>
     withUserId { userid =>
       withJsonBody[Habit] { habit =>
@@ -128,10 +125,17 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     }
   }
 
-  //Remove habit from model
+  // Takes habit id and removes that habit
   def removeHabit() = Action.async { implicit request =>
     withJsonBody[Int] { habitid =>
       model.removeHabit(habitid).map(deleted => Ok(Json.toJson(deleted)))
+    }
+  }
+
+  // Takes habit and updates values of that habit
+  def editHabit() = Action.async { implicit request =>
+    withJsonBody[Habit] { habit =>
+      model.editHabit(habit.habitid, habit).map(numUpdated => Ok(Json.toJson(numUpdated > 0)))
     }
   }
 }

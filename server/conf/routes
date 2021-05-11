@@ -4,6 +4,8 @@
 
 # Home page
 GET        /                             controllers.LoginController.index
+
+# User routes
 POST       /validateUser                 controllers.LoginController.validateUser
 POST       /createUser                   controllers.LoginController.createUser
 
@@ -16,8 +18,15 @@ POST       /deleteTask                   controllers.MainController.deleteTask
 GET        /getAllDays                   controllers.MainController.getAllDays
 
 GET        /getHabits                    controllers.MainController.getHabits
+
+POST       /editUserFullname             controllers.LoginController.editUserFullname
+POST       /editUserEmail                controllers.LoginController.editUserEmail
+
+# Data routes
+POST       /editMood                     controllers.MainController.editMood
 POST       /addHabit                     controllers.MainController.addHabit
 POST       /removeHabit                  controllers.MainController.removeHabit
+POST       /editHabit                    controllers.MainController.editHabit
 
 
 # Prefix must match `play.assets.urlPrefix`

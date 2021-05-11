@@ -1,5 +1,8 @@
-// import M from "../../materialize/js";
+import { OverviewPage } from "./overviewPage.js"
+import { CalendarPage } from "./calendarPage.js"
+import { JournalPage } from "./journalPage.js"
 import { TaskList } from './taskList.js';
+
 console.log("Running version 4.");
 
 const validateRoute = document.getElementById("validateRoute").value;
@@ -16,8 +19,8 @@ class checkLogIn extends React.Component {
   
     render() {
       if (this.state.loggedIn) {
-        //return ce('h2', null, 'This is where the home page would go')
-        return ce(TaskList);
+        return ce(OverviewPage);
+        // return ce(TaskList);
       } else {
         return ce(LoginComponent, { doLogin: () => this.setState( { loggedIn: true }) });
       }
@@ -65,7 +68,6 @@ class LoginComponent extends React.Component {
                       ce("div", {className: "col s1"}),
                       ce("div", {className: "col s3"},
                         ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.login(e)}, "Log in"),
-                        ce("span", {id: "login-message"}, this.state.loginMessage),
                       ),
                     ),
                   ),
@@ -96,9 +98,12 @@ class LoginComponent extends React.Component {
                       ),
                     ),
                     ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.createUser(e)}, "Create Account"),
-                    ce('span', {id: "create-message"}, this.state.createMessage),
                   ),
                 ),
+              ),
+              ce("div", {className: "col s12", id: "failure-notif"},
+                ce("p", {id: "login-message", className: "center-align"}, this.state.loginMessage),
+                ce('p', {id: "create-message", className: "center-align"}, this.state.createMessage),
               ),
             ),
           ),
@@ -121,7 +126,7 @@ class LoginComponent extends React.Component {
         if(data) {
           this.props.doLogin();
         } else {
-          this.setState({ loginMessage: "Login Failed" });
+          this.setState({ loginMessage: "Login failed" });
         }
       });
     }
@@ -139,7 +144,7 @@ class LoginComponent extends React.Component {
           if(data) {
             this.props.doLogin();
           } else {
-             this.setState({ createMessage: "User Creation Failed" });
+             this.setState({ createMessage: "Account couldn't be created" });
           }
         });
     }
