@@ -31,11 +31,11 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
       Json.fromJson[A](body) match {
         case JsSuccess(a, path) => f(a)
         case e @ JsError(_) =>
-          println("Error in LoginController: " + e)
+          println("Error in MainController: " + e)
           Future.successful(Ok(Json.toJson(false)))
       }
     }.getOrElse {
-      println("Error in LoginController: cannot read JSON body")
+      println("Error in MainController: cannot read JSON body")
       Future.successful(Ok(Json.toJson(false)))
     }
   }
@@ -66,9 +66,18 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   // Takes task and adds that task
   def addTask() = Action.async { implicit request =>
     withUserId { userid =>
-      withJsonBody[Task] { task =>
-        model.addTask(task, userid, task.dayid).map(numAdded => Ok(Json.toJson(numAdded > 0)))
-      }
+      //withDayId { dayid =>
+        withJsonBody[Task] { task =>
+          model.addTask(task, userid, task.dayid).map(numAdded => Ok(Json.toJson(numAdded > 0)))
+        }
+      //}
+    }
+  }
+
+  //Edit task in model
+  def editTask() = Action.async { implicit request =>
+    withJsonBody[Task]{ task => 
+      model.editTask(task.taskid, task).map(numEdited => Ok(Json.toJson(numEdited > 0)))
     }
   }
 

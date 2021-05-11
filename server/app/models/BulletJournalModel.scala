@@ -100,7 +100,9 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             }).result
         ).map(tasks => tasks.map{case (task, dayid) => {
             Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
-        }})
+        }}.sortWith((task1, task2) => {
+                task1.taskid.compareTo(task2.taskid) < task2.taskid.compareTo(task1.taskid)
+        }))
     }
 
     // Returns all tasks for the given user and day
@@ -113,6 +115,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             }).result
         ).map(tasks => tasks.map(task => {
             Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
+        }).sortWith((task1, task2) => {
+                task1.taskid.compareTo(task2.taskid) < task2.taskid.compareTo(task1.taskid)
         }))
     }
 
@@ -126,7 +130,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     // Creates new task for given user and day with Task object supplied
     // Returns integer > 0 if successful, 0 otherwise
     def addTask(task: Task, userid: Int, dayid: Int): Future[Int] = {
-        db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, None, None, userid, dayid))
+        db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, getSQLDate(task.dueDate), getSQLDate(task.reminder), userid, dayid))
     }
 
     // Deletes given task
@@ -140,13 +144,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     // Returns integer > 0 if successful, 0 otherwise
     // TODO: add dayid as parameter to allow tasks to be moved into other days
     def editTask(taskid: Int, task: Task): Future[Int] = {
-        db.run(
-            (for {
-                task <- Tasks if task.id === taskid
-            } yield {
-                (task.title, task.completed, task.description, task.dueDate, task.reminder)
-            }).update((task.title, task.completed, task.description, getSQLDate(task.dueDate), getSQLDate(task.reminder)))
-        )
+        db.run((for {taskDB <- Tasks if taskDB.id === taskid} yield {taskDB.userId}).result).flatMap(userids => { val userid = userids.head
+            db.run(Tasks.filter(_.id === taskid).update(TasksRow(taskid, task.title, task.completed, task.description, getSQLDate(task.dueDate), getSQLDate(task.reminder), userid, task.dayid)))})
     }
 
     private def getSQLDate(odate: Option[LocalDate]): Option[java.sql.Date] = {
