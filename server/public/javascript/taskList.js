@@ -4,6 +4,9 @@ const addTaskRoute = document.getElementById('addTaskRoute').value;
 const allTasksRoute = document.getElementById('allTasksRoute').value;
 const csrfToken = document.getElementById("csrfToken").value;
 
+//const instance = M.Datepicker.getInstance(document.getElementById("addReminderDate"));
+//console.log(instance.toString());
+
 export class TaskList extends React.Component {
     _isMounted = false;
 
@@ -25,6 +28,7 @@ export class TaskList extends React.Component {
     changerHandler(e) {
         this.setState({ [e.target['id']]: e.target.value });
     }
+
 
     getTaskState() {
         return {title: this.addTitle, description: this.addDescription, completed: this.completed, dueDate: this.addDueDate, reminder: this.addReminderDate}
@@ -64,7 +68,7 @@ export class TaskList extends React.Component {
                             ce("div", {className: "card-content"},
                                 ce('span', {className: "card-title"}, "Task Details"),
                                     this.state.isShowingDetails ? 
-                                        ce(EditTask, {isAdding: false, editTask: (e) => this.editTask(e), taskState: () => this.getTaskState()}, null) : 
+                                        ce(EditTask, {isAdding: false, editTask: (e) => this.editTask(e), taskState: this.state.tasks[0]}, null) : 
                                         this.state.isAdding ? 
                                             ce(EditTask, {isAdding: true, addTask: (e) => this.addTask(e), onDataChange: (e) => this.changerHandler(e)}, null) : 
                                             ce("div", null, "Click a Task to see its details")
@@ -86,7 +90,7 @@ export class TaskList extends React.Component {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
             // TODO: replace nulls with option[date]
-            body: JSON.stringify({taskid: -1, dayid: 1, title: this.state.addTitle, description: this.state.addDescription, completed: false, dueDate: null, reminder: null})
+            body: JSON.stringify({taskid: -1, dayid: 1, title: this.state.addTitle, description: this.state.addDescription, completed: false, dueDate: this.state.addDueDate, reminder: this.state.addReminderDate})
           }).then(res => res.json()).then(data => {
             if(data) {
               console.log("success");
@@ -141,8 +145,8 @@ class Task extends React.Component {
                 ce("i", {className: "material-icons circle pink lighten-1"}),
                 ce("span", {className: "title"}, this.state.title),
                 ce("div", null, ce("span", null,  this.state.description)),
-                this.state.dueDate == undefined ? ce("div", null, ce("span", null,  "No due date set")) : ce("div", null, ce("span", null,  "Due: " + this.state.dueDate)),
-                this.state.reminder == undefined ? ce("div", null, ce("span", null,  "No reminder date set")) : ce("div", null, ce("span", null,  "Reminder: " + this.state.reminder)),
+                this.state.dueDate == null ? ce("div", null, ce("span", null,  "No due date set")) : ce("div", null, ce("span", null,  "Due: " + this.state.dueDate)),
+                this.state.reminder == null ? ce("div", null, ce("span", null,  "No reminder date set")) : ce("div", null, ce("span", null,  "Reminder: " + this.state.reminder)),
                 // this.state.completed ? ce('i', {className: "material-icons"}, 'check_box') : ce('i', {className: "material-icons"}, 'check_box_outline_blank'),
                 // ce("label", null, 
                 //     ce("input", {type: "checkbox", className: "filled-in", onClick: e  => this.flipCompleted()}, null),
@@ -165,22 +169,35 @@ class EditTask extends React.Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            
+            dueDate: "",
+            reminder: "",
         };
     }
 
     handleChange(e) {
         this.props.onDataChange(e);
     }
-    // handleDescriptionChange(e) {
-    //     this.props.onDescriptionChange(e.target.value);
-    // }
-    // handleDueDateChange(e) {
-    //     this.props.onDueDateChange(e.target.value);
-    // }
-    // handleReminderChange(e) {
-    //     this.props.onReminderChange(e.target.value);
-    // }
+    
+    componentDidMount() {
+        M.AutoInit();
+        const dueDateInstance = M.Datepicker.init(document.getElementById("addDueDate"), {
+            format: "yyyy-mm-dd",
+            onSelect: () => {
+                const day = dueDateInstance.toString();
+                const e = {target: {id: "addDueDate", value: day}};
+                console.log(e);
+                this.props.onDataChange(e);
+            }});
+        const reminderDateInstance = M.Datepicker.init(document.getElementById("addReminderDate"), {
+            format: "yyyy-mm-dd",
+            onSelect: () => {
+                const day = reminderDateInstance.toString();
+                const e = {target: {id: "addReminderDate", value: day}};
+                console.log(e);
+                this.props.onDataChange(e);
+            }});
+        }
+
     render() {
         return(
             ce("div", {className: "container"},
@@ -189,7 +206,9 @@ class EditTask extends React.Component {
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s12"},
                                 ce('label', {htmlFor:"edit_title"}, "Task Title" ),
-                                ce('input', {type: "text", id: "addTitle", onChange: (e) => this.handleChange(e),  className: "validate"}),
+                                    this.props.isAdding ?
+                                        ce('input', {type: "text", id: "addTitle", onChange: (e) => this.handleChange(e),  className: "validate"}) :
+                                        ce('input', {type: "text", id: "editTitle",  onChange: (e) => console.log("changed"), className: "validate", value: "hello"})
                             ), 
                         ),
                         ce("div",{className: "row"},
@@ -201,11 +220,11 @@ class EditTask extends React.Component {
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s6"},
                                 ce('label', {htmlFor:"edit_due_date"}, "Due Date" ),
-                                ce('input', {type: "text", id: "addDueDate", onChange: (e) => this.handleChange(e),  className: "validate"}),
+                                ce('input', {type: "text", id: "addDueDate", className: "datePicker"}),
                             ),
                             ce("div",{className: "input-field col s6"},
                                 ce('label', {htmlFor:"edit_reminder_date"}, "Reminder Date" ),
-                                ce('input', {type: "text", id: "addReminderDate", onChange: (e) => this.handleChange(e),  className: "datepicker"}),
+                                ce('input', {type: "text", id: "addReminderDate", className: "datepicker"}),
                             ),
                         ),
                         this.props.isAdding ? ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.props.addTask(e)}, "Add") : ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.props.editTask(e)}, "Save"),
@@ -214,27 +233,6 @@ class EditTask extends React.Component {
                     )
                 )
             )
-            // ce("div", {className: "container"},
-            //     ce("div",{className: "row"},
-            //         ce("div",{className: "input-field col s6"},
-            //             this.props.isAdding ? 
-            //                 ce('input', {placeholder:"Title", id: "addTitle", onChange: (e) => this.handleChange(e)}) :
-            //                 ce
-            //             //ce('div', null, "Temp Text" ),
-            //         ),
-            //         ce("div",{className: "input-field col s6"},
-            //             ce('input', {placeholder:"Description", id: "addDescription", onChange: (e) => this.handleChange(e)}),
-            //         ),
-            //         ce("div",{className: "input-field col s3"},
-            //             ce('input', {placeholder:"Due Date", id: "addDueDate", onChange: (e) => this.handleChange(e)}),
-            //         ),
-            //         ce("div",{className: "input-field col s3"},
-            //             ce('input', {placeholder:"Reminder Date", id: "addReminderDate", onChange: (e) => this.handleChange(e)}),
-            //         ),
-            //         this.props.isAdding ? ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.props.addTask(e)}, "Add") : ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: e => this.props.editTask(e)}, "Save"),
-            //         ce('span', {id: "edit-task"}, this.state.createMessage)
-            //     )
-            // )
         );
 
         

@@ -100,7 +100,9 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             }).result
         ).map(tasks => tasks.map{case (task, dayid) => {
             Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
-        }})
+        }}.sortWith((task1, task2) => {
+                task1.taskid.compareTo(task2.taskid) < task2.taskid.compareTo(task1.taskid)
+        }))
     }
 
     // Returns all tasks for the given user and day
@@ -113,6 +115,8 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
             }).result
         ).map(tasks => tasks.map(task => {
             Task(task.id, dayid, task.title, task.description, task.completed, getTimeDate(task.dueDate), getTimeDate(task.reminder))
+        }).sortWith((task1, task2) => {
+                task1.taskid.compareTo(task2.taskid) < task2.taskid.compareTo(task1.taskid)
         }))
     }
 
@@ -126,7 +130,7 @@ class BulletJournalModel(db: Database)(implicit ec: ExecutionContext) {
     // Creates new task for given user and day with Task object supplied
     // Returns integer > 0 if successful, 0 otherwise
     def addTask(task: Task, userid: Int, dayid: Int): Future[Int] = {
-        db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, None, None, userid, dayid))
+        db.run(Tasks += TasksRow(-1, task.title, task.completed, task.description, getSQLDate(task.dueDate), getSQLDate(task.reminder), userid, dayid))
     }
 
     // Deletes given task
