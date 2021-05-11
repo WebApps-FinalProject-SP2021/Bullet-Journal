@@ -13,7 +13,7 @@ GET        /getAllTasks                  controllers.MainController.getAllTasks
 GET        /getTasksForDay               controllers.MainController.getTasksForDay
 POST       /addTask                      controllers.MainController.addTask
 POST       /editTask                     controllers.MainController.editTask
-POST       /deleteTask                   controllers.MainController.deleteTask
+POST       /removeTask                   controllers.MainController.removeTask
 
 GET        /getAllDays                   controllers.MainController.getAllDays
 
