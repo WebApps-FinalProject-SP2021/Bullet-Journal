@@ -85,7 +85,7 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     withUserId { userid =>
       //withDayId { dayid =>
         withJsonBody[Task] { task =>
-          model.addTask(task, userid, 1).map(numAdded => Ok(Json.toJson(numAdded > 0)))
+          model.addTask(task, userid, task.dayid).map(numAdded => Ok(Json.toJson(numAdded > 0)))
         }
       //}
     }
