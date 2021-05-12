@@ -27,7 +27,6 @@ export class TaskList extends React.Component {
             isEditing: false, 
             addTitle: "",
             addDescription: "",
-            //addcompleted: false,
             addDueDate: null,
             addReminderDate: null,
             isAdding: false,
