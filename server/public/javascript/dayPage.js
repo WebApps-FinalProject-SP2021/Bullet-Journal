@@ -3,7 +3,6 @@ import { TrackerPage } from "./trackerPage.js"
 import { checkLogIn } from "./login.js"
 
 const ce = React.createElement
-//const logoutRoute = document.getElementById("logoutRoute").value;
 
 export class DayPage extends React.Component {
     constructor(props) {
