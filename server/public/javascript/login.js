@@ -1,7 +1,7 @@
 import { DayPage } from "./dayPage.js"
 import { TaskPage } from "./taskPage.js"
 import { TrackerPage } from "./trackerPage.js"
-import { TaskList } from './taskList.js';
+//import { TaskList } from './taskList.js';
 
 console.log("Running version 4.");
 
