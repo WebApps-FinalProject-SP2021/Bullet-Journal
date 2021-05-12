@@ -1,3 +1,4 @@
+'use strict';
 const ce = React.createElement;
 
 const addTaskRoute = document.getElementById('addTaskRoute').value;
@@ -20,7 +21,7 @@ export class TaskList extends React.Component {
             editTask: null,
             editTitle: "",
             editDescription: "",
-            //editcompleted: false,
+            editcompleted: false,
             editDueDate: "",
             editReminderDate: "",
             editTaskid: -1,
