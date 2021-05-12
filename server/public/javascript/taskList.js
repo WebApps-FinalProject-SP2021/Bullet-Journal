@@ -87,7 +87,7 @@ export class TaskList extends React.Component {
     }
 
     loadTasks() {
-        fetch(allTasksRoute).then(res => res.json()).then(tasksRet => {if(this._isMounted) this.setState({ tasks: tasksRet })});
+        fetch(allTasksRoute).then(res => res.json()).then(tasksRet => {console.log(tasksRet); if(this._isMounted) this.setState({ tasks: tasksRet })});
     }
 
     addTask(e) {
