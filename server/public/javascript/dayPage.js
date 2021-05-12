@@ -4,6 +4,8 @@ import { TrackerPage } from "./trackerPage.js"
 
 const ce = React.createElement
 
+const allTasksRoute = document.getElementById('allTasksRoute').value;
+
 export class DayPage extends React.Component {
     constructor(props) {
         super(props);
