@@ -1,6 +1,7 @@
 import { DayPage } from "./dayPage.js"
 import { TrackerPage } from "./trackerPage.js"
 import { TaskList } from "./taskList.js"
+import { checkLogIn } from "./login.js"
 
 // const addTaskRoute = document.getElementById('addTaskRoute').value;
 // const editTaskRoute = document.getElementById('editTaskRoute').value;
@@ -25,6 +26,8 @@ export class TaskPage extends React.Component {
                 return(ce(DayPage))
             case "tracker":
                 return(ce(TrackerPage))
+            case "logout":
+                return(ce(checkLogIn))
             default:
                 return(
                     ce("div", null,
@@ -36,10 +39,13 @@ export class TaskPage extends React.Component {
                                         ce("a", {href: "#", onClick: e => this.switchPage("day", e)}, "Today"),
                                     ),
                                     ce("li", {key: "navTasks", className: "active"},
-                                    ce("a", {href: "#", onClick: e => this.switchPage("task", e)}, "Tasks"),
+                                        ce("a", {href: "#", onClick: e => this.switchPage("task", e)}, "Tasks"),
                                     ),
                                     ce("li", {key: "navTracker"},
                                         ce("a", {href: "#", onClick: e => this.switchPage("tracker", e)}, "Moods & Habits"),
+                                    ),
+                                    ce("li", {key: "navLogout"},
+                                        ce("a", {href: "#", onClick: e => this.switchPage("logout", e)}, "Logout"),
                                     ),
                                 )
                             )
