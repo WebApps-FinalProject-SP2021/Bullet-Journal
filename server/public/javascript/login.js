@@ -1,6 +1,6 @@
-import { OverviewPage } from "./overviewPage.js"
-import { CalendarPage } from "./calendarPage.js"
-import { JournalPage } from "./journalPage.js"
+import { DayPage } from "./dayPage.js"
+import { TaskPage } from "./taskPage.js"
+import { TrackerPage } from "./trackerPage.js"
 import { TaskList } from './taskList.js';
 
 console.log("Running version 4.");
@@ -19,7 +19,7 @@ class checkLogIn extends React.Component {
   
     render() {
       if (this.state.loggedIn) {
-        return ce(OverviewPage);
+        return ce(DayPage);
         // return ce(TaskList);
       } else {
         return ce(LoginComponent, { doLogin: () => this.setState( { loggedIn: true }) });
