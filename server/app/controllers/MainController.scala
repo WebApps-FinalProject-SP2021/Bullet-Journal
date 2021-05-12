@@ -49,7 +49,9 @@ class MainController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   // Gets all tasks for a user
   def getAllTasks() = Action.async { implicit request =>
+  println("got here")
     withUserId { userid =>
+      println("userid is " + userid)
       model.getAllTasks(userid).map(tasks => Ok(Json.toJson(tasks)))
     }
   }
