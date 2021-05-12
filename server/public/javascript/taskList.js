@@ -305,8 +305,8 @@ class EditTask extends React.Component {
 
     handleChange(e) {
         // TODO: fix removal of last character
-        const task = {title: this.state.title, description: this.state.description, dueDate: this.state.dueDate, reminder: this.state.reminder, completed: !this.state.completed};
-        //console.log("completed" + task.completed);
+        const task = {title: this.state.title, description: this.state.description, dueDate: this.state.dueDate, reminder: this.state.reminder, completed: this.state.completed};
+        console.log("completed: " + task.completed);
         const ev = {target: {id: "editTask", value: task}};
         this.props.onDataChange(ev);
     }
@@ -363,13 +363,13 @@ class EditTask extends React.Component {
                     ce("form",{className: "col s12"},
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s12"},
-                                ce('input', {type: "text", id: "editTitle",  onChange: (e) => {this.setState({title: e.target.value}); this.handleChange(e)}, className: "validate", defaultValue: this.state.title}, null),
+                                ce('input', {type: "text", id: "editTitle",  onChange: (e) => {this.setState({title: e.target.value}, () => this.handleChange(e));}, className: "validate", defaultValue: this.state.title}, null),
                                 ce('label', {htmlFor:"editTitle", className:"active"}, "Task Title")                                
                             ), 
                         ),
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s12"},
-                                ce('input', {type: "text", id: "editDescription", onChange: (e) => {this.setState({description: e.target.value}); this.handleChange(e)}, className: "validate", defaultValue: this.state.description}, null),
+                                ce('input', {type: "text", id: "editDescription", onChange: (e) => {this.setState({description: e.target.value}, () => this.handleChange(e));}, className: "validate", defaultValue: this.state.description}, null),
                                 ce('label', {htmlFor:"editDescription", className:"active"}, "Description" )
                             ),
                         ),
@@ -387,7 +387,7 @@ class EditTask extends React.Component {
                         ce("div", {className: "row"},
                             ce("div", {className: "col s4"},
                                 ce("label", null, 
-                                    ce("input", {type: "checkbox", className: "filled-in", onChange: e  => {this.setState({completed: e.target.checked}); this.handleChange(e)}, defaultChecked: this.state.completed}, null),
+                                    ce("input", {type: "checkbox", className: "filled-in", onChange: e  => {this.setState({completed: e.target.checked}, () => this.handleChange(e));}, defaultChecked: this.state.completed}, null),
                                     ce("span", null, "Done")
                                 ),
                             ),
