@@ -19,11 +19,11 @@ export class TaskList extends React.Component {
         this.state = { 
             tasks: [],
             editTask: null,
-            editTitle: "",
-            editDescription: "",
-            editcompleted: false,
-            editDueDate: "",
-            editReminderDate: "",
+            //editTitle: "",
+            //editDescription: "",
+            //editcompleted: false,
+            //editDueDate: "",
+            //editReminderDate: "",
             editTaskid: -1,
             isEditing: false, 
             addTitle: "",
@@ -63,7 +63,7 @@ export class TaskList extends React.Component {
                         ce("div", {className: "card"},
                             ce("div", {className: "card-content"},
                                 ce('span', {className: "card-title"}, "List"),
-                                this.state.tasks.map(task => ce(Task, {key: task.id + task.title + task.description + task.dueDate + task.reminder, taskData: task, show: () => {this.setState({editTask: task}); this.setState({editTaskid: task.taskid}), this.setState({isEditing: !this.state.isEditing}); this.setState({isAdding: false})} }, null)),
+                                this.state.tasks.map(task => ce(Task, {key: task.id + task.title + task.description + task.dueDate + task.reminder + task.completed, taskData: task, show: () => {this.setState({editTask: task}); this.setState({editTaskid: task.taskid}), this.setState({isEditing: !this.state.isEditing}); this.setState({isAdding: false})} }, null)),
                                 ce("a", {className: "waves-effect waves-light btn", onClick: (e) => {this.setState({isAdding: !this.state.isAdding}); this.setState({isEditing: false})}}, "Add Task"),
                             )
                         )
@@ -132,7 +132,6 @@ export class TaskList extends React.Component {
         fetch(deleteTaskRoute, { 
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'Csrf-Token': csrfToken },
-            // TODO: fix dayid
             body: JSON.stringify(this.state.editTaskid)
           }).then(res => res.json()).then(data => {
             if(data) {
@@ -161,10 +160,6 @@ class Task extends React.Component {
         };
     }
 
-    flipCompleted(e) {
-        // TODO: Ajax to update completed attribute in DB
-    }
-
 
     render() {return(
         ce("div", {className: "container", onClick: e => this.props.show()}, 
@@ -172,16 +167,13 @@ class Task extends React.Component {
             ce("div", {className: "collection"},
                     
             ce("li", {className: "collection-item avatar"},
-                ce("i", {className: "material-icons circle pink lighten-1"}),
+                this.state.completed ? ce("i", {className: "material-icons circle green lighten-1"}) : ce("i", {className: "material-icons circle red lighten-1"}),
                 ce("span", {className: "title"}, this.state.title),
                 ce("div", null, ce("span", null,  this.state.description)),
                 this.state.dueDate == "" || this.state.dueDate == null ? ce("div", null, ce("span", null,  "No due date set")) : ce("div", null, ce("span", null,  "Due: " + this.state.dueDate)),
                 this.state.reminder == "" || this.state.reminder == null ? ce("div", null, ce("span", null,  "No reminder date set")) : ce("div", null, ce("span", null,  "Reminder: " + this.state.reminder)),
-                // this.state.completed ? ce('i', {className: "material-icons"}, 'check_box') : ce('i', {className: "material-icons"}, 'check_box_outline_blank'),
-                // ce("label", null, 
-                //     ce("input", {type: "checkbox", className: "filled-in", onClick: e  => this.flipCompleted()}, null),
-                //     ce("span", null, "Done")
-                // ),
+                //this.state.completed ? ce('i', {className: "material-icons"}, 'check') : ce('i', {className: "material-icons"}, 'clear'),
+
                 ce("a", {className: "secondary-content"}, 
                     ce("i", {className: "material-icons"}),
                 )   
@@ -199,7 +191,7 @@ class AddTask extends React.Component {
         super(props);
         this.changeData("task", "");
         this.changeData("description", "");
-        this.changeData("completed", false);
+        //this.changeData("completed", false);
         this.changeData("dueDate", null);
         this.changeData("reminder", null);
         // this.state = {
@@ -307,13 +299,14 @@ class EditTask extends React.Component {
             description: task.description,
             dueDate: task.dueDate,
             reminder: task.reminder,
+            completed: task.completed,
         };
     }
 
     handleChange(e) {
         // TODO: fix removal of last character
-        const task = {title: this.state.title, description: this.state.description, dueDate: this.state.dueDate, reminder: this.state.reminder, completed: false};
-        console.log(task);
+        const task = {title: this.state.title, description: this.state.description, dueDate: this.state.dueDate, reminder: this.state.reminder, completed: this.state.completed};
+        console.log("completed: " + task.completed);
         const ev = {target: {id: "editTask", value: task}};
         this.props.onDataChange(ev);
     }
@@ -370,13 +363,13 @@ class EditTask extends React.Component {
                     ce("form",{className: "col s12"},
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s12"},
-                                ce('input', {type: "text", id: "editTitle",  onChange: (e) => {this.setState({title: e.target.value}); this.handleChange(e)}, className: "validate", defaultValue: this.state.title}, null),
+                                ce('input', {type: "text", id: "editTitle",  onChange: (e) => {this.setState({title: e.target.value}, () => this.handleChange(e));}, className: "validate", defaultValue: this.state.title}, null),
                                 ce('label', {htmlFor:"editTitle", className:"active"}, "Task Title")                                
                             ), 
                         ),
                         ce("div",{className: "row"},
                             ce("div",{className: "input-field col s12"},
-                                ce('input', {type: "text", id: "editDescription", onChange: (e) => {this.setState({description: e.target.value}); this.handleChange(e)}, className: "validate", defaultValue: this.state.description}, null),
+                                ce('input', {type: "text", id: "editDescription", onChange: (e) => {this.setState({description: e.target.value}, () => this.handleChange(e));}, className: "validate", defaultValue: this.state.description}, null),
                                 ce('label', {htmlFor:"editDescription", className:"active"}, "Description" )
                             ),
                         ),
@@ -392,6 +385,12 @@ class EditTask extends React.Component {
                             ),
                         ),
                         ce("div", {className: "row"},
+                            ce("div", {className: "col s4"},
+                                ce("label", null, 
+                                    ce("input", {type: "checkbox", className: "filled-in", onChange: e  => {this.setState({completed: e.target.checked}, () => this.handleChange(e));}, defaultChecked: this.state.completed}, null),
+                                    ce("span", null, "Done")
+                                ),
+                            ),
                             ce("div", {className: "col s4"}, 
                                 ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: (e) => this.props.editTask(e)}, "Save")),
                             ce("div", {className: "col s4"}, 
@@ -407,11 +406,6 @@ class EditTask extends React.Component {
 
         
     }
-    //TODO add all the change handlers and the routes to be changed
-    // editTask(e)
-    // {
-
-    // }
 }
   
 
