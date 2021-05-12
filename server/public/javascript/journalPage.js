@@ -1,5 +1,6 @@
 import { OverviewPage } from "./overviewPage.js"
 import { CalendarPage } from "./calendarPage.js"
+import { MoodHabitPage } from './moodHabitTracker.js';
 
 const ce = React.createElement
 
@@ -39,7 +40,8 @@ export class JournalPage extends React.Component {
                             )
                         ),
                         ce("div", {className: "container"},
-                            ce("h2", null, "journal page placeholder")
+                            // ce("h2", null, "journal page placeholder")
+                            
                         )
                     )
                 )
