@@ -11,7 +11,7 @@ const csrfToken = document.getElementById("csrfToken").value;
 
 const ce = React.createElement
 
-class checkLogIn extends React.Component {
+export class checkLogIn extends React.Component {
     constructor(props) {
       super(props);
       this.state = { loggedIn: false };
