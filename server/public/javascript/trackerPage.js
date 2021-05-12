@@ -1,6 +1,7 @@
 import { DayPage } from "./dayPage.js"
 import { TaskPage } from "./taskPage.js"
 import { checkLogIn } from "./login.js"
+import {MoodHabitPage} from "./moodHabitTracker.js"
 
 const ce = React.createElement
 
@@ -45,7 +46,8 @@ export class TrackerPage extends React.Component {
                             )
                         ),
                         ce("div", {className: "container"},
-                            ce("h2", null, "moods and habits page placeholder")
+                            
+                            ce(MoodHabitPage),
                         )
                     )
                 )
