@@ -4,6 +4,8 @@ Bullet Journal web application for Dr. Lewis' Web Apps Spring 2021 with Play, Re
 
 Written by Matthew Barton, Morgan Cartwright, Morgen Halle, and Vasti Sarai Rios Rios.
 
+Deployed on [Heroku](https://bullet-journal-web-app.herokuapp.com/)
+
 ---
 ### Materialize Style Guide
 [Documentation](https://materializecss.com/color.html)
