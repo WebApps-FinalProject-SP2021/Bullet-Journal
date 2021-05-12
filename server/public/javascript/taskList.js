@@ -415,11 +415,6 @@ class EditTask extends React.Component {
 }
   
 
-ReactDOM.render(
-    ce(TaskList, null, null),
-    document.getElementById('reactRoot')
-  );
-
   
                 // ce("li", {key: "editTask"},
                 // ce("div", {className: "collapsible-header"}, "Edit"),
