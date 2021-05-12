@@ -45,3 +45,6 @@ set timezone = 'America/Chicago';
 create user charg with password 'password';
 grant all privileges on database bullet_journal to charg;
 alter user charg with superuser;
+
+-- use this command to set ids to increment starting at 1 again after delete records
+-- alter sequence <tablename>_<columnname>_seq restart with 1;
