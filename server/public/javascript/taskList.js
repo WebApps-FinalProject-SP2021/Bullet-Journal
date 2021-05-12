@@ -55,28 +55,28 @@ export class TaskList extends React.Component {
             ce("div", {className: "container"},
 
                 ce("div", {className: "row"},
-                    ce("h3", {className: "center-align"}, "Task List")
+                    ce("h4", {className: "center-align"}, "Task List")
                 ),
 
                 ce("div", {className: "row"},
                     ce("div", {className: "col s6"},
                         ce("div", {className: "card"},
                             ce("div", {className: "card-content"},
-                                ce('span', {className: "card-title"}, "List"),
+                                ce('span', {className: "card-title center-align"}, "List"),
                                 this.state.tasks.map(task => ce(Task, {key: task.id + task.title + task.description + task.dueDate + task.reminder + task.completed, taskData: task, show: () => {this.setState({editTask: task}); this.setState({editTaskid: task.taskid}), this.setState({isEditing: !this.state.isEditing}); this.setState({isAdding: false})} }, null)),
-                                ce("a", {className: "waves-effect waves-light btn", onClick: (e) => {this.setState({isAdding: !this.state.isAdding}); this.setState({isEditing: false})}}, "Add Task"),
+                                        ce("a", {className: "waves-effect waves-light btn pink lighten-1", onClick: (e) => {this.setState({isAdding: !this.state.isAdding}); this.setState({isEditing: false})}}, "Add Task"),
                             )
                         )
                     ),
                     ce("div", {className: "col s6"},
                         ce("div", {className: "card"},
                             ce("div", {className: "card-content"},
-                                ce('span', {className: "card-title"}, "Task Details"),
+                                ce('span', {className: "card-title center-align"}, "Details"),
                                     this.state.isEditing ? 
                                         ce(EditTask, {editTask: (e) => this.editTask(e), deleteTask: (e) => this.deleteTask(e), onDataChange: (e) => this.changerHandler(e), taskState: this.state.editTask}, null) : 
                                         this.state.isAdding ? 
                                             ce(AddTask, {addTask: (e) => this.addTask(e), onDataChange: (e) => this.changerHandler(e)}, null) : 
-                                            ce("div", null, "Click a Task to see its details")
+                                            ce("div", {className: "center-align"}, "Click a task to see or edit details")
                             )
                         )
                     )
@@ -146,7 +146,7 @@ export class TaskList extends React.Component {
     }
 }
 
-class Task extends React.Component {
+export class Task extends React.Component {
     
     constructor(props) {
         super(props);
@@ -167,7 +167,7 @@ class Task extends React.Component {
             ce("div", {className: "collection"},
                     
             ce("li", {className: "collection-item avatar"},
-                this.state.completed ? ce("i", {className: "material-icons circle green lighten-1"}) : ce("i", {className: "material-icons circle red lighten-1"}),
+                this.state.completed ? ce("i", {className: "material-icons circle green lighten-1"}) : ce("i", {className: "material-icons circle pink darken-2"}),
                 ce("span", {className: "title"}, this.state.title),
                 ce("div", null, ce("span", null,  this.state.description)),
                 this.state.dueDate == "" || this.state.dueDate == null ? ce("div", null, ce("span", null,  "No due date set")) : ce("div", null, ce("span", null,  "Due: " + this.state.dueDate)),
@@ -405,6 +405,70 @@ class EditTask extends React.Component {
         
 
         
+    }
+}
+
+export class TasksToday extends React.Component {
+    _isMounted = false;
+
+    constructor(props) {
+        super(props);
+        //this.handleTitleChange = this.handleTitleChange.bind(this);
+        this.state = { 
+            currentPage: "day",
+            tasks: [],
+            editTask: null,
+            //editTitle: "",
+            //editDescription: "",
+            //editcompleted: false,
+            //editDueDate: "",
+            //editReminderDate: "",
+            editTaskid: -1,
+            isEditing: false, 
+            addTitle: "",
+            addDescription: "",
+            addDueDate: null,
+            addReminderDate: null,
+            isAdding: false,
+            completed: false,
+        };
+        //this.taskElement = React.createRef();
+    }
+
+    changerHandler(e) {
+        this.setState({ [e.target['id']]: e.target.value });
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+        this.loadTasks();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+      }
+    
+
+    render() {
+            return( 
+                    ce("div", {className: "col s6"},
+                        ce("div", {className: "card"},
+                            ce("div", {className: "card-content"},
+                                ce("span", {className: "card-title center-align"}, "Tasks"),
+                                this.state.tasks.map(task => ce(Task, {key: task.id + task.title + task.description + task.dueDate + task.reminder + task.completed, taskData: task, show: () => {this.setState({editTask: task}); this.setState({editTaskid: task.taskid}), this.setState({isEditing: !this.state.isEditing}); this.setState({isAdding: false})} }, null)),
+                            ),
+                    )
+                )
+            )
+    }
+
+    switchPage(newPage, e) {
+        e.preventDefault();
+        this.setState({ currentPage: newPage })
+    }
+
+    loadTasks() {
+        fetch(allTasksRoute).then(res => res.json()).then(tasksRet => {console.log(tasksRet); if(this._isMounted) this.setState({ tasks: tasksRet })});
     }
 }
   

@@ -1,4 +1,5 @@
 import { TaskPage } from "./taskPage.js"
+import { TasksToday } from "./taskList.js"
 import { TrackerPage } from "./trackerPage.js"
 
 const ce = React.createElement
@@ -7,8 +8,13 @@ export class DayPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentPage: "day"
+            currentPage: "day",
+            tasks: []
         }
+    }
+
+    componentDidMount() {
+        this.loadTasks();
     }
 
     render() {
@@ -39,14 +45,24 @@ export class DayPage extends React.Component {
                             )
                         ),
                         ce("div", {className: "container"},
-                            ce("h2", null, "day page placeholder")
+                            ce("div", {className: "row"},
+                                ce("h4", {className: "center-align"}, "Current & Upcoming"),
+                            ),
+                            ce("div", {className: "row"},
+                                ce(TasksToday),
+                                ce("div", {className: "col s6"}) //placeholder for moods & habits
+                                )
+                            )
                         )
-                    )
                 )
         } 
     }
     switchPage(newPage, e) {
         e.preventDefault();
         this.setState({ currentPage: newPage })
+    }
+
+    loadTasks() {
+        fetch(allTasksRoute).then(res => res.json()).then(tasksRet => {console.log(tasksRet); this.setState({ tasks: tasksRet })});
     }
 }
